@@ -1,0 +1,146 @@
+<p>To skrypt, który napisałem do gry w jedną z minigier z <a href="https://play.google.com/store/apps/details?id=com.toystudio.thecurse">The Curse</a>, polegającą na znalezieniu cyklu Hamiltona.</p>
+
+<h2>Instrukcja obsługi</h2>
+<p><strong>Dwuklik</strong> dodaje nowy wierzchołek.</p>
+<p><strong>Przeciągnięcie</strong> powoduje utworzenie dwukierunkowej krawędzi między wierzchołkami.</p>
+<p><strong>Przycisk "Szukaj"</strong> powoduje ponumerowanie wierzchołków zgodnie z kolejnością w znalezionym cyklu Hamiltona</p>
+
+<p>Jeśli masz problem z pojawiającym się zaznaczeniem tekstu, kliknij gdzieś na tekst, żeby je usunąć.</p>
+
+<canvas style="border: 2px solid #bbb;" width="400" height="300" id="canvas"></canvas><br>
+<button onclick="solve(); draw()">Szukaj!</button>
+
+<script>
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+
+var P = function(x, y) {
+	this.x = x; this.y = y;
+	this.edges = [];
+};
+
+P.prototype.edist = function(event) {
+	var dx, dy;
+	dx = Math.abs(this.x - event.offsetX);
+	dy = Math.abs(this.y - event.offsetY);
+	return Math.max(dx, dy);
+};
+
+P.prototype.dist = function(other) {
+	var dx, dy;
+	dx = Math.abs(this.x - other.x);
+	dy = Math.abs(this.y - other.y);
+	return Math.max(dx, dy);
+};
+
+var points = [ ];
+var R = 10;
+var source, target;
+
+var solve = function() {
+	var visited = [], i;
+	for(i = 0; i < points; ++i) {
+		visited.push(false);
+	}
+
+	var queue = [];
+	var start = points[0];
+	var depth = 0;
+
+	var search = function(p) {
+		var i, other, idx = points.indexOf(p);
+		console.log("Visiting", idx);
+		if(visited[idx]) {
+			console.log("  already visited");
+			if(p == start && depth == points.length) {
+				console.log("  but also it is the END!");
+				return true;
+			}
+			console.log("  therefore going back...");
+			return false;
+		}
+		visited[idx] = true;
+		++depth;
+		for(i = 0; i < p.edges.length; ++i) {
+			if(search(p.edges[i])) {
+				console.log("Vertex", idx, "has depth", depth);
+				p.number = depth;
+				--depth;
+				return true;
+			}
+		}
+		--depth;
+		visited[idx] = false;
+	};
+
+	search(start);
+};
+
+var line = function(ax, ay, bx, by) {
+	ctx.beginPath();
+	ctx.moveTo(ax, ay);
+	ctx.lineTo(bx, by);
+	ctx.stroke();
+	ctx.closePath();
+};
+
+var draw = function() {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);
+	var a, b, i, j;
+	for(i = 0; i < points.length; ++i) {
+		a = points[i];
+		ctx.fillRect(a.x - R/2, a.y - R/2, R, R);
+		for(j = 0; j < a.edges.length; ++j) {
+			b = a.edges[j];
+			line(a.x, a.y, b.x, b.y);
+		}
+		if(a.number) {
+			ctx.fillText(''+a.number, a.x + R / 2, a.y - R / 2);
+		}
+	}
+	if(source && target) {
+		line(source.x, source.y, target.x, target.y);
+	}
+};
+
+canvas.ondblclick = function(e) {
+	var x = e.offsetX, y = e.offsetY;
+	points.push(new P(x, y));
+	console.log(e);
+	draw();
+};
+
+canvas.onmousedown = function(e) {
+	var x = e.offsetX, y = e.offsetY;
+	var i;
+	for(i = 0; i < points.length; ++i) {
+		if(points[i].edist(e) <= R/2) break;
+	}
+	if(i < points.length) {
+		console.log("Found ", points[i]);
+		source = points[i];
+		canvas.onmousemove = function(e) {
+			var x = e.offsetX, y = e.offsetY;
+			target = {x: x, y: y};
+			draw();
+		};
+		canvas.onmouseup = function(e) {
+			var i;
+			for(i = 0; i < points.length; ++i) {
+				if(points[i] == source) continue;
+				if(points[i].edist(e) <= R/2) break;
+			}
+			if(i < points.length) {
+				points[i].edges.push(source);
+				source.edges.push(points[i]);
+			}
+			canvas.onmousemove = target = source = undefined;
+			draw();
+		};
+		draw();
+	}
+}
+
+draw();
+
+</script>

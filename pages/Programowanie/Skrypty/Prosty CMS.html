@@ -1,0 +1,15 @@
+<p>Na potrzeby własnej strony (miałem już dość Drupala) napisałem niewielki skrypt generujący stronę z plików html rozrzuconych po katalogach.
+<p>Skrypt nie nada się na nastawionego na strumieniowanie wpisów bloga ani na ostrożnie kontrolujące edycje wiki. Dobrze sprawdzi się za to do trzymania strony informacyjnej o drzewiastej strukturze odczytywanej dynamicznie z systemu plików.
+<p>Dwie najpotrzebniejsze funkcje, które obsługuje to:</p>
+<ul>
+<li>generowanie drzewiastego menu
+<li>sortowanie artykułów po dacie ostatniej edycji
+</ul>
+<p>Zalety względem Drupala:
+<ul>
+<li><em>Prostszy w edycji</em> - wszystko opiera się na HTML5, niecałych 200 linijkach PHP i mechanizmach POSIX.
+<li>Nie wymaga bazy danych - wszystko trzyma w plikach.
+<li>Zamiast 50MB ciągle wołającego aktualizacji CMSa, wszystkim zarządza 5kB skrypt.
+<li>Czas generowania ma ponad stukrotnie mniejszy: 0,1s&nbsp;&rarr;&nbsp;0,001s.
+</ul>
+<p>Cały kod udostępniam na <a href="https://github.com/mafik/SimpleCMS">repozytorium</a>, na GitHubie.

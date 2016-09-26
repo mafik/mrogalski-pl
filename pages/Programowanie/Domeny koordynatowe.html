@@ -1,0 +1,196 @@
+<p>To potencjalna domena pozwalająca nadawać krótkie nazwy hostom na podstawie ich położenia geograficznego.</p>
+<h2>Budowa</h2>
+<p>Przykład nazwy dla mojego komputera to: <code>munchkin.uJId.g</code>. Domena składa się z trzech części:</p>
+<dl>
+  <dt><code>munchkin</code></dt> <dd>to nazwa hosta.</dd>
+  <dt><code>uJId</code></dt> <dd>zawiera zakodowane (specjalny format binarny w base64) współrzędne geograficzne: 51,75 19,56</dd>
+  <dt><code>g</code></dt> <dd>to domena najwyższego poziomu zawierająca domeny koordynatowe.</dd>
+</dl>
+<h2>Działanie protokołu</h2>
+<p>Klient chcący rozwiązać nazwę wykonuje zapytanie do bazy danych przestrzennych wykorzystując odkodowane współrzędne oraz nazwę hosta która ma zostać wyszukana w danym obszarze.</p>
+<p>W przypadku sieci kratowych może wysłać komunikat rozgłoszeniowy na odczytane współrzędne. W przypadku sieci IP baza danych przestrzennych może działać na serwerze.</p>
+<p>Wynikiem zapytania jest adres IP.</p>
+<p>Jeśli w bazie danych znajdzie się wiele adresów (być może nastąpiła próba przejęcia adresu bądź adres opisuje zasoby rozproszone na wielu hostach), zwracane są wszystkie rekordy. Wybór właściwego należy do klienta i może zostać dokonany z wykorzystaniem metod kryptograficznych.</p>
+<h2>Routing w sieciach kratowych</h2>
+<p>W sieciach kratowych opartych na współrzędnych geograficznych koordynatowe adresy DNS w ogóle nie muszą być rozwiązywane. Odczytane wartości mogą zastać wykorzystane bezpośrednio w routingu wiadomości.</p>
+<h2>Maskowanie, tunele i roaming</h2>
+<p>Możliwe jest tworzenie wirtualnych hostów. Router znajdujący się pod danym adresem może tunelować wiadomości trafiające do wirtualnego hosta pozwalając w ten sposób na roaming urządzeń mobilnych.</p>
+<h2>Konstrukcja adresu</h2>
+<p>Adres budowany jest przez binarne dzielenie naprzemiennie długości i szerokości geograficznej oraz zapamiętywanie czy szukany punkt posiada większą czy mniejszą daną współrzędną.</p>
+<p>Z tak, naprzemiennie przetasowanych wartości binarnych tworzy się liczbę, którą koduje się <em>kodem graya</em>. Dzięki temu pobliskie lokalizacje posiadać będą niewiele różniące się adresy.</p>
+<p>Gotowy ciąg binarny koduje się za pomocą Base64. Kolejne sześć wartości binarnych odpowiada pojedynczemu znakowi zakodowanego adresu.</p>
+<p>Kolejne znaki adresu dzielą poprzedni zakres na 64 części.</p>
+<p><em>Wzorcowa implementacja powyższego algorytmu w języku javascript znajduje się w kodzie źród łowym tej strony.</em></p>
+<h2>Generator adresów</h2>
+<script src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
+<script>
+    $(function () {
+
+	var latlng = new google.maps.LatLng(-34.397, 150.644);
+	var map_options = {
+	    zoom: 8,
+	    center: latlng,
+	    mapTypeId: google.maps.MapTypeId.TERRAIN
+	};
+	var map = new google.maps.Map(document.getElementById("mapa"), map_options);
+	znacznik = new google.maps.Polygon();
+
+	var base64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+	function gray(v) {
+	    l = v.length;
+	    r = new Array();
+	    r.push(v[0]);
+	    for(i=1; i<l; ++i){
+		r.push(v[i-1] != v[i]);
+	    }
+	    return r;
+	}
+
+	function natural(v) {
+	    r = new Array();
+	    r.push(Boolean(v[0]));
+	    for(i=1; i<v.length; ++i) {
+		r.push(r[i-1] != v[i]);
+	    }
+	    return r;
+	}
+
+	function showOnMap(acc, split) {
+	    sw = new google.maps.LatLng(acc[0]-split[0], acc[1]-split[1]);
+	    ne = new google.maps.LatLng(acc[0]+split[0], acc[1]+split[1]);
+	    bounds = new google.maps.LatLngBounds(sw, ne);
+	    var edges = [
+		new google.maps.LatLng(acc[0]-split[0], acc[1]-split[1]),
+		new google.maps.LatLng(acc[0]+split[0], acc[1]-split[1]),
+		new google.maps.LatLng(acc[0]+split[0], acc[1]+split[1]),
+		new google.maps.LatLng(acc[0]-split[0], acc[1]+split[1])
+	    ];
+	    znacznik.setMap(null);
+	    znacznik = new google.maps.Polygon({
+		paths: edges,
+		strokeColor: "#FF0000",
+		strokeOpacity: 0.8,
+		strokeWeight: 2,
+		fillColor: "#FF0000",
+		fillOpacity: 0.35
+	    });
+	    znacznik.setMap(map);
+	    if(!dragging) {
+		map.fitBounds(bounds);
+	    }
+	}
+
+	function mapMoved() {
+	    center = map.getCenter();
+	    $('#szerokosc').val(center.lat());
+	    $('#dlugosc').val(center.lng());
+	}
+
+	google.maps.event.addListener(map, 'drag', mapMoved);
+	google.maps.event.addListener(map, 'dragend', make_addr);
+	var dragging = false;
+	google.maps.event.addListener(map, 'dragstart', function() {dragging = true;});
+	google.maps.event.addListener(map, 'dragend', function() {dragging = false;});
+
+	function make_addr() {
+	    loc = [ parseFloat($('#szerokosc').val()),
+		    parseFloat($('#dlugosc').val()) ];
+	    host = $('#host').val();
+	    split = [90, 180];
+	    acc = [0,0];
+	    vector = [];
+	    chars = parseInt($('#dokladnosc').val());
+	    for(i=0; i<chars*6; ++i) {
+		ind = (i+1)%2;
+		split[ind] /= 2;
+		if(loc[ind] < acc[ind]) {
+		    vector.push(false);
+		    acc[ind] -= split[ind];
+		} else {
+		    vector.push(true);
+		    acc[ind] += split[ind];
+		}
+	    }
+	    vector = gray(vector);
+	    addr = '';
+	    for(i=0; i<chars; ++i) {
+		ind = i*6;
+		val =   Number(vector[ind]) << 5 |
+		    Number(vector[ind + 1]) << 4 |
+		    Number(vector[ind + 2]) << 3 |
+		    Number(vector[ind + 3]) << 2 |
+		    Number(vector[ind + 4]) << 1 |
+		    Number(vector[ind + 5]) << 0;
+		addr = addr.concat(base64[val]);
+	    }
+	    $('#adres').val(host.concat('.', addr, '.g'));
+	    $('#odczytany_host').text(host);
+	    $('#odczytana_dlugosc').text(acc[1].toFixed(4) + ' ± ' + split[1].toPrecision(2));
+	    $('#odczytana_szerokosc').text(acc[0].toFixed(4) + ' ± ' + split[0].toPrecision(2));
+	    showOnMap(acc, split);
+	}
+	function read_addr() {
+	    addr = $('#adres').val();
+	    path = addr.split('.');
+
+	    host = '';
+	    for(i=0; i<path.length-2; ++i) {
+		host = host.concat(path[i]);
+	    }
+	    $('#odczytany_host').text(host);
+
+	    str = path[path.length-2];
+	    g = new Array();
+	    for(i=0; i<str.length; ++i) {
+		val = base64.indexOf(str[i]);
+		char_bin = [(val >> 5) & 1,
+			    (val >> 4) & 1,
+			    (val >> 3) & 1,
+			    (val >> 2) & 1,
+			    (val >> 1) & 1,
+			    val & 1];
+		g = g.concat(char_bin);
+	    }
+	    vector = natural(g);
+	    split = [90, 180];
+	    acc = [0,0];
+	    for(i=0; i<vector.length; ++i) {
+		ind = (i+1)%2;
+		split[ind] /= 2;
+		if(vector[i]) {
+		    acc[ind] += split[ind];
+		} else {
+		    acc[ind] -= split[ind];
+		}
+	    }
+	    $('#odczytana_dlugosc').text(acc[1].toFixed(4) + ' ± ' + split[1].toPrecision(2));
+	    $('#odczytana_szerokosc').text(acc[0].toFixed(4) + ' ± ' + split[0].toPrecision(2));
+	    showOnMap(acc, split);
+	}
+	$('#host, #szerokosc, #dlugosc, #dokladnosc').change(make_addr);
+	$('#adres').change(read_addr);
+	make_addr();
+
+    })
+</script>
+<div><label for="host">Nazwa hosta:</label><input type="text" id="host" value="munchkin"></div>
+<div><label for="dlugosc">Długość:</label><input type="text" id="dlugosc" value="19.54"></div>
+<div><label for="szerokosc">Szerokość:</label><input type="text" id="szerokosc" value="51.73"></div>
+<div><label for="dokladnosc">Znaków adresu:</label><select id="dokladnosc">
+  <option>1</option>
+  <option>2</option>
+  <option>3</option>
+  <option selected>4</option>
+  <option>5</option>
+  <option>6</option>
+  <option>7</option>
+  <option>8</option>
+</select></div>
+<hr />
+<div><label for="adres">Adres:</label><input type="text" id="adres"></div>
+<div id="odczytany_host"></div>
+<div id="odczytana_dlugosc"></div>
+<div id="odczytana_szerokosc"></div>
+<div id="mapa" style="    width: 100%;
+    height: 20em;"></div>
+

@@ -1,0 +1,64 @@
+<p>To skrypt, który napisałem do gry w jedną z minigier z <a href="https://play.google.com/store/apps/details?id=com.toystudio.thecurse">The Curse</a>, bardzo zbliżoną do klasycznego Masterminda.</p>
+
+<p><em>Algorytm w pigułce:</em> w każdym kroku wybiera taki ruch, który w najgorszym razie wyeliminuje najwięcej odpowiedzi.</p>
+
+<p>Surową wersję możesz pobrać <a href="/download/mastermind.py">stąd</a>.
+
+<p><em>Dodatkowe umagi:</em></p>
+
+<ul>
+    <li>Domyślnie gra sam ze sobą - w zmiennej <code>p</code> trzyma prawidłowe rozwiązanie, które próbuje odgadnąć w kolejnych próbach</li>
+    <li>Niektóre kombinacje kodów i odpowiedzi powodują zawieszanie wersji opisanej przez Knutha. Udało się to naprawić sortując propozycje po punktach dla wszystkich odpowiedzi kodera (poczynając od najgorszych) a nie tylko po najgorszej.</li>
+</ul>
+
+
+<div class="highlight"><pre><span class="c"># -*- coding: utf-8 -*-</span>
+
+<span class="n">S</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">N</span> <span class="o">=</span> <span class="mi">6</span>
+
+<span class="n">p</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">generuj</span><span class="p">():</span>
+	<span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+		<span class="k">for</span> <span class="n">b</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+			<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+				<span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
+					<span class="k">yield</span> <span class="p">[</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">,</span><span class="n">c</span><span class="p">,</span><span class="n">d</span><span class="p">]</span>
+
+<span class="n">S</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">generuj</span><span class="p">())</span>
+
+<span class="k">def</span> <span class="nf">wspolne</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+	<span class="n">suma</span> <span class="o">=</span> <span class="mi">0</span>
+	<span class="k">for</span> <span class="n">ai</span><span class="p">,</span> <span class="n">bi</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+		<span class="k">if</span> <span class="n">ai</span> <span class="o">==</span> <span class="n">bi</span><span class="p">:</span>
+			<span class="n">suma</span> <span class="o">+=</span> <span class="mi">1</span>
+	<span class="k">return</span> <span class="n">suma</span>
+
+<span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">S</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+	<span class="n">najlepsza_opcja</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span>
+	<span class="n">ile_odrzuci_najlepsza</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">N</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">opcja</span> <span class="ow">in</span> <span class="n">generuj</span><span class="p">():</span>
+		<span class="c">#print &quot;Rozważam opcję &quot;, opcja</span>
+		<span class="c">#do_odrzucenia = 10000000</span>
+		<span class="n">odrzucone</span> <span class="o">=</span> <span class="p">[]</span>
+		<span class="k">for</span> <span class="n">odpowiedz</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">):</span> <span class="c"># 0, 1, 2... 4</span>
+			<span class="n">do_wywalenia</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">S</span> <span class="k">if</span> <span class="n">wspolne</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">opcja</span><span class="p">)</span> <span class="o">==</span> <span class="n">odpowiedz</span><span class="p">]</span>
+			<span class="c">#do_odrzucenia = min(do_odrzucenia, len(do_wywalenia))</span>
+			<span class="n">odrzucone</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">do_wywalenia</span><span class="p">))</span>
+			<span class="c">#print &quot;  dla odopwiedzi &quot;, odpowiedz, &quot;wywalę&quot;, len(do_wywalenia)</span>
+		<span class="n">odrzucone</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+		<span class="n">odrzucone</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">odrzucone</span><span class="p">)</span>
+		<span class="k">if</span> <span class="n">odrzucone</span> <span class="o">&gt;=</span> <span class="n">ile_odrzuci_najlepsza</span><span class="p">:</span>
+			<span class="n">ile_odrzuci_najlepsza</span> <span class="o">=</span> <span class="n">odrzucone</span>
+			<span class="n">najlepsza_opcja</span> <span class="o">=</span> <span class="n">opcja</span>
+
+	<span class="n">odpowiedz</span> <span class="o">=</span> <span class="n">wspolne</span><span class="p">(</span><span class="n">najlepsza_opcja</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span>
+	<span class="n">S</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">S</span> <span class="k">if</span> <span class="n">wspolne</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">najlepsza_opcja</span><span class="p">)</span> <span class="o">==</span> <span class="n">odpowiedz</span><span class="p">]</span>
+
+	<span class="k">print</span> <span class="s">&quot;Wybrałem opcję&quot;</span><span class="p">,</span> <span class="n">najlepsza_opcja</span><span class="p">,</span> <span class="s">&#39;pesymistycznie wyeliminuje ona&#39;</span><span class="p">,</span> <span class="n">ile_odrzuci_najlepsza</span>
+	<span class="k">print</span> <span class="s">&quot;  odpowiedź kodera to&quot;</span><span class="p">,</span> <span class="n">odpowiedz</span>
+	<span class="k">print</span> <span class="s">&quot;  pozostało&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">S</span><span class="p">),</span> <span class="s">&quot;możliwości&quot;</span>
+
+<span class="k">print</span> <span class="s">&quot;Odpowiedź to&quot;</span><span class="p">,</span> <span class="n">S</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>

@@ -1,0 +1,31 @@
+<p><strong>Ingress</strong> to gra społecznościowa, w której celem jest przemierzanie świata i hakowanie wirtualnych portali.</p>
+<p>Jak się okazuje, dużo łatwiej zhakować samą grę. Oto łatka, którą należy zpatchować Androida:</p>
+<pre>
+diff --git a/core/java/android/provider/Settings.java b/core/java/android/provider/Settings.java
+index 5675dd2..ca0e445 100644
+--- a/core/java/android/provider/Settings.java
++++ b/core/java/android/provider/Settings.java
+@@ -3640,6 +3640,10 @@ public final class Settings {
+          * @return the corresponding value, or null if not present
+          */
+         public static String getString(ContentResolver resolver, String name) {
++            if(name.equals(Secure.ALLOW_MOCK_LOCATION)) {
++                Log.d("INGRESS_HACK", "Settings.Secure.getString reporting ALLOW_MOCK_LOCATION as \"0\".");
++                return "0";
++            }
+             return getStringForUser(resolver, name, UserHandle.myUserId());
+         }
+ 
+@@ -3757,6 +3761,10 @@ public final class Settings {
+          */
+         public static int getInt(ContentResolver cr, String name)
+                 throws SettingNotFoundException {
++            if(name.equals(Secure.ALLOW_MOCK_LOCATION)) {
++                Log.d("INGRESS_HACK", "Settings.Secure.getInt reporting ALLOW_MOCK_LOCATION as 0.");
++                return 0;
++            }
+             return getIntForUser(cr, name, UserHandle.myUserId());
+         }
+ 
+</pre>
+<p>Następnie możemy teleportować się korzystając ze standardowego mechanizmu pozorowania lokalizacji. Polecam do tego <a href="/download/Locator.apk">swoją apkę</a>.

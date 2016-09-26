@@ -1,0 +1,40 @@
+<p>Jeśli korzystasz z portalu <a href="https://www.coursera.org/">Coursera</a> i lubisz trzymać swoje pliki na dysku, pewnie przyda ci się skrypt do pobierania materiałów zabezpieczonych ciasteczkowym kluczem sesji.</p>
+<h2>Uruchamianie</h2>
+<p>Do uruchomienia potrzebne są: Curl, GNU Wget, GNU Parallel i oczywiście GNU Bash.
+<p>Skrypt polega na pliku <code>cookie.txt</code>, w którym powinny znaleźć się wszystkie potrzebne ciasteczka. Możesz wygenerować go za pomocą rozszerzenia <em>cookies.txt exporter</em>. Resztę instrukcji znajdziesz w skrypcie.</p>
+<h2><a href="/download/coursera-ripper.sh">coursera-ripper.sh</a></h2>
+
+<div class="highlight"><pre><span class="c">#!/bin/bash</span>
+
+<span class="c"># 1. Fill in the course name (from the course url)</span>
+<span class="nv">COURSE</span><span class="o">=</span><span class="s2">&quot;neuralnets-2012-001&quot;</span>
+
+<span class="c"># 2. Copy cookies and place it in cookie.txt file (netscape format)</span>
+<span class="c"># You can use &quot;cookie.txt export&quot; extension to get it easily</span>
+<span class="nv">COOKIES</span><span class="o">=</span><span class="s2">&quot;cookie.txt&quot;</span>
+
+<span class="c"># 3. Run this script</span>
+
+<span class="nv">W_OPT</span><span class="o">=</span><span class="s2">&quot;-q --content-disposition --trust-server-names --cookies=on\</span>
+<span class="s2">	--load-cookies=$COOKIES --keep-session-cookies --save-cookies=$COOKIES\</span>
+<span class="s2">	-P ./$COURSE/&quot;</span>
+
+<span class="nv">C_OPT</span><span class="o">=</span><span class="s2">&quot;-sb $COOKIES&quot;</span>
+
+<span class="nv">INDEX_URL</span><span class="o">=</span><span class="s2">&quot;https://class.coursera.org/$COURSE/lecture/index&quot;</span>
+
+<span class="nv">MP4_RE</span><span class="o">=</span><span class="s2">&quot;https.\+download.mp4?lecture_id=\\w\+&quot;</span>
+<span class="nv">SRT_RE</span><span class="o">=</span><span class="s2">&quot;https.\+/subtitles?q=\\w\+_en&amp;format=srt&quot;</span>
+<span class="nv">PDF_RE</span><span class="o">=</span><span class="s2">&quot;https.\+\.pdf&quot;</span>
+<span class="nv">PPT_RE</span><span class="o">=</span><span class="s2">&quot;http.\+\.ppt\(x\)\?&quot;</span>
+
+<span class="nv">RE</span><span class="o">=</span><span class="s2">&quot;\($MP4_RE\|$SRT_RE\|$PDF_RE\|$PPT_RE\)&quot;</span>
+
+mkdir -p <span class="nv">$COURSE</span>
+
+curl <span class="nv">$C_OPT</span> <span class="nv">$INDEX_URL</span> | grep -oe <span class="nv">$RE</span> | sort | uniq | shuf |<span class="se">\</span>
+	parallel --eta -j6 wget <span class="nv">$W_OPT</span>
+
+<span class="c"># 4. Profit!</span>
+</pre></div>
+

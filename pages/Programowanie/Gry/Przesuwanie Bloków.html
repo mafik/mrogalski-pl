@@ -1,0 +1,379 @@
+<p>To program, który napisałem do gry w jedną z minigier z <a href="https://play.google.com/store/apps/details?id=com.toystudio.thecurse">The Curse</a>, polegającą na takim przesuwaniu prostokątnych bloków, żeby wyprowadzić większy blok przez wyjście.</p>
+<h2>Kompilacja</h2>
+<pre>
+g++ --std=c++11 <a href="/download/blocks.cpp">blocks.cpp</a>
+</pre>
+<h2><a href="/download/blocks.cpp">blocks.cpp</a></h2>
+
+<div class="highlight"><pre><span class="cp">#include &lt;cstdio&gt;</span>
+<span class="cp">#include &lt;map&gt;</span>
+<span class="cp">#include &lt;set&gt;</span>
+<span class="cp">#include &lt;vector&gt;</span>
+<span class="cp">#include &lt;queue&gt;</span>
+
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">block</span> <span class="p">{</span>
+	<span class="kt">int</span> <span class="n">width</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">height</span><span class="p">;</span>
+	<span class="n">block</span><span class="p">(</span><span class="kt">int</span> <span class="n">w</span><span class="p">,</span> <span class="kt">int</span> <span class="n">h</span><span class="p">)</span><span class="o">:</span> <span class="n">width</span><span class="p">(</span><span class="n">w</span><span class="p">),</span> <span class="n">height</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="p">{}</span>
+	<span class="kt">bool</span> <span class="k">operator</span> <span class="o">&lt;</span><span class="p">(</span><span class="k">const</span> <span class="n">block</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">width</span> <span class="o">!=</span> <span class="n">other</span><span class="p">.</span><span class="n">width</span><span class="p">)</span> <span class="k">return</span> <span class="n">width</span> <span class="o">&lt;</span> <span class="n">other</span><span class="p">.</span><span class="n">width</span><span class="p">;</span>
+		<span class="k">return</span> <span class="n">height</span> <span class="o">&lt;</span> <span class="n">other</span><span class="p">.</span><span class="n">height</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">game</span><span class="p">;</span>
+
+<span class="k">struct</span> <span class="n">state</span> <span class="p">{</span>
+	<span class="n">block</span><span class="o">***</span> <span class="n">data</span><span class="p">;</span>
+	<span class="n">game</span><span class="o">*</span> <span class="n">g</span><span class="p">;</span>
+
+	<span class="n">state</span><span class="p">();</span>
+	<span class="n">state</span><span class="p">(</span><span class="k">const</span> <span class="n">state</span><span class="o">&amp;</span><span class="p">);</span>
+	<span class="n">state</span><span class="p">(</span><span class="n">game</span><span class="o">*</span><span class="p">);</span>
+	<span class="o">~</span><span class="n">state</span><span class="p">();</span>
+	<span class="n">vector</span><span class="o">&lt;</span><span class="n">state</span><span class="o">*&gt;</span> <span class="n">moves</span><span class="p">();</span>
+	<span class="kt">void</span> <span class="n">show</span><span class="p">();</span>
+	<span class="kt">bool</span> <span class="n">is_free</span><span class="p">(</span><span class="kt">int</span> <span class="n">col</span><span class="p">,</span> <span class="kt">int</span> <span class="n">row</span><span class="p">);</span>
+	<span class="kt">bool</span> <span class="k">operator</span><span class="o">&lt;</span><span class="p">(</span><span class="k">const</span> <span class="n">state</span><span class="o">&amp;</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+	<span class="kt">bool</span> <span class="k">operator</span><span class="o">==</span><span class="p">(</span><span class="k">const</span> <span class="n">state</span><span class="o">&amp;</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+	<span class="kt">bool</span> <span class="k">operator</span><span class="o">!=</span><span class="p">(</span><span class="k">const</span> <span class="n">state</span><span class="o">&amp;</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">struct</span> <span class="n">game</span> <span class="p">{</span>
+	<span class="n">state</span><span class="o">*</span> <span class="n">initial_state</span><span class="p">;</span>
+	<span class="n">map</span><span class="o">&lt;</span><span class="n">state</span><span class="p">,</span> <span class="n">state</span><span class="o">&gt;</span> <span class="n">state_tree</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">width</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">height</span><span class="p">;</span>
+
+	<span class="n">set</span><span class="o">&lt;</span><span class="n">block</span><span class="o">*&gt;</span> <span class="n">blocks</span><span class="p">;</span>
+	<span class="n">block</span><span class="o">*</span> <span class="n">target</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">target_column</span><span class="p">,</span> <span class="n">target_row</span><span class="p">;</span>
+
+	<span class="n">game</span><span class="p">(</span><span class="kt">int</span> <span class="n">w</span><span class="p">,</span> <span class="kt">int</span> <span class="n">h</span><span class="p">)</span><span class="o">:</span> <span class="n">width</span><span class="p">(</span><span class="n">w</span><span class="p">),</span> <span class="n">height</span><span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">initial_state</span> <span class="o">=</span> <span class="k">new</span> <span class="n">state</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="o">~</span><span class="n">game</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">for</span><span class="p">(</span><span class="n">block</span><span class="o">*</span> <span class="n">b</span> <span class="o">:</span> <span class="n">blocks</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">delete</span> <span class="n">b</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">delete</span> <span class="n">initial_state</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="n">block</span><span class="o">*</span> <span class="n">place_obstacle</span><span class="p">(</span><span class="kt">int</span> <span class="n">column</span><span class="p">,</span> <span class="kt">int</span> <span class="n">row</span><span class="p">,</span> <span class="kt">int</span> <span class="n">width</span><span class="p">,</span> <span class="kt">int</span> <span class="n">height</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">block</span><span class="o">*</span> <span class="n">n</span> <span class="o">=</span> <span class="k">new</span> <span class="n">block</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">);</span>
+		<span class="n">blocks</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">n</span><span class="p">);</span>
+		<span class="n">initial_state</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">]</span> <span class="o">=</span> <span class="n">n</span><span class="p">;</span>
+		<span class="k">return</span> <span class="n">n</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="n">block</span><span class="o">*</span> <span class="n">place_target</span><span class="p">(</span><span class="kt">int</span> <span class="n">column</span><span class="p">,</span> <span class="kt">int</span> <span class="n">row</span><span class="p">,</span> <span class="kt">int</span> <span class="n">width</span><span class="p">,</span> <span class="kt">int</span> <span class="n">height</span><span class="p">,</span> <span class="kt">int</span> <span class="n">tc</span><span class="p">,</span> <span class="kt">int</span> <span class="n">tr</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">target</span> <span class="o">=</span> <span class="n">place_obstacle</span><span class="p">(</span><span class="n">column</span><span class="p">,</span> <span class="n">row</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">);</span>
+		<span class="n">target_column</span> <span class="o">=</span> <span class="n">tc</span><span class="p">;</span>
+		<span class="n">target_row</span> <span class="o">=</span> <span class="n">tr</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="kt">void</span> <span class="n">solve</span><span class="p">()</span> <span class="p">{</span>
+		<span class="n">state_tree</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">make_pair</span><span class="p">(</span><span class="o">*</span><span class="n">initial_state</span><span class="p">,</span> <span class="o">*</span><span class="n">initial_state</span><span class="p">));</span>
+		<span class="n">queue</span><span class="o">&lt;</span><span class="n">state</span><span class="o">*&gt;</span> <span class="n">q</span><span class="p">;</span>
+		<span class="n">state</span><span class="o">*</span> <span class="n">answer</span><span class="p">;</span>
+
+		<span class="n">q</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">initial_state</span><span class="p">);</span>
+
+		<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="n">q</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span> <span class="p">{</span>
+
+			<span class="k">if</span><span class="p">(</span><span class="o">++</span><span class="n">i</span> <span class="o">%</span> <span class="mi">10000</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+				<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Runda %d: %lu stanów w kolejce</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">q</span><span class="p">.</span><span class="n">size</span><span class="p">());</span>
+			<span class="n">state</span><span class="o">*</span> <span class="n">source</span> <span class="o">=</span> <span class="n">q</span><span class="p">.</span><span class="n">front</span><span class="p">();</span> <span class="n">q</span><span class="p">.</span><span class="n">pop</span><span class="p">();</span>
+			<span class="c1">//source-&gt;show();</span>
+			<span class="n">vector</span><span class="o">&lt;</span><span class="n">state</span><span class="o">*&gt;</span> <span class="n">next_v</span> <span class="o">=</span> <span class="n">source</span><span class="o">-&gt;</span><span class="n">moves</span><span class="p">();</span>
+			<span class="k">for</span><span class="p">(</span><span class="n">state</span><span class="o">*</span> <span class="n">current</span> <span class="o">:</span> <span class="n">next_v</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">if</span><span class="p">(</span><span class="n">state_tree</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="o">*</span><span class="n">current</span><span class="p">)</span> <span class="o">==</span> <span class="n">state_tree</span><span class="p">.</span><span class="n">end</span><span class="p">())</span> <span class="p">{</span>
+					<span class="n">state_tree</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">make_pair</span><span class="p">(</span><span class="o">*</span><span class="n">current</span><span class="p">,</span> <span class="o">*</span><span class="n">source</span><span class="p">));</span>
+					<span class="n">q</span><span class="p">.</span><span class="n">push</span><span class="p">(</span><span class="n">current</span><span class="p">);</span>
+					<span class="c1">//printf(&quot;Dodaję nowy stan do kolejki!\n&quot;);</span>
+					<span class="c1">//current-&gt;show();</span>
+				<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+					<span class="c1">//printf(&quot;Powrót do wcześniejszego stanu!!!\n&quot;);</span>
+					<span class="c1">//current-&gt;show();</span>
+					<span class="c1">//printf(&quot;vvvv\n&quot;);</span>
+					<span class="c1">//state_tree[*current].show();</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">q</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">800</span><span class="p">)</span> <span class="p">{</span>
+				<span class="c1">//break;</span>
+			<span class="p">}</span>
+			<span class="cm">/*if(i % 50000 == 10) {</span>
+<span class="cm">				printf(&quot;Current state so far:\n&quot;);</span>
+<span class="cm">				source-&gt;show();</span>
+<span class="cm">			}*/</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">source</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">target_column</span><span class="p">][</span><span class="n">target_row</span><span class="p">]</span> <span class="o">==</span> <span class="n">target</span><span class="p">)</span> <span class="p">{</span>
+				<span class="n">answer</span> <span class="o">=</span> <span class="n">source</span><span class="p">;</span>
+				<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Bingo!</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+				<span class="k">break</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+
+		<span class="n">state</span><span class="o">*</span> <span class="n">t</span> <span class="o">=</span> <span class="n">answer</span><span class="p">;</span>
+		<span class="k">while</span><span class="p">(</span><span class="o">*</span><span class="n">t</span> <span class="o">!=</span> <span class="o">*</span><span class="n">initial_state</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">t</span><span class="o">-&gt;</span><span class="n">show</span><span class="p">();</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&quot;----</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+			<span class="n">t</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">state_tree</span><span class="p">[</span><span class="o">*</span><span class="n">t</span><span class="p">];</span>
+		<span class="p">}</span>
+
+	<span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">state</span><span class="o">::</span><span class="n">state</span><span class="p">()</span><span class="o">:</span> <span class="n">g</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">data</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{}</span>
+
+<span class="n">state</span><span class="o">::</span><span class="n">state</span><span class="p">(</span><span class="n">game</span><span class="o">*</span> <span class="n">_g</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">g</span> <span class="o">=</span> <span class="n">_g</span><span class="p">;</span>
+	<span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">block</span><span class="o">**</span><span class="p">[</span><span class="n">g</span><span class="o">-&gt;</span><span class="n">width</span><span class="p">];</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">column</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">column</span> <span class="o">&lt;</span> <span class="n">g</span><span class="o">-&gt;</span><span class="n">width</span><span class="p">;</span> <span class="o">++</span><span class="n">column</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">block</span><span class="o">*</span><span class="p">[</span><span class="n">g</span><span class="o">-&gt;</span><span class="n">height</span><span class="p">];</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">row</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="n">g</span><span class="o">-&gt;</span><span class="n">height</span><span class="p">;</span> <span class="o">++</span><span class="n">row</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">state</span><span class="o">::</span><span class="n">state</span><span class="p">(</span><span class="k">const</span> <span class="n">state</span><span class="o">&amp;</span> <span class="n">orig</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">g</span> <span class="o">=</span> <span class="n">orig</span><span class="p">.</span><span class="n">g</span><span class="p">;</span>
+	<span class="n">data</span> <span class="o">=</span> <span class="k">new</span> <span class="n">block</span><span class="o">**</span><span class="p">[</span><span class="n">g</span><span class="o">-&gt;</span><span class="n">width</span><span class="p">];</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">column</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">column</span> <span class="o">&lt;</span> <span class="n">g</span><span class="o">-&gt;</span><span class="n">width</span><span class="p">;</span> <span class="o">++</span><span class="n">column</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="n">block</span><span class="o">*</span><span class="p">[</span><span class="n">g</span><span class="o">-&gt;</span><span class="n">height</span><span class="p">];</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">row</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="n">g</span><span class="o">-&gt;</span><span class="n">height</span><span class="p">;</span> <span class="o">++</span><span class="n">row</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">]</span> <span class="o">=</span> <span class="n">orig</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">];</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">state</span><span class="o">::~</span><span class="n">state</span><span class="p">()</span> <span class="p">{</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">column</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">column</span> <span class="o">&lt;</span> <span class="n">g</span><span class="o">-&gt;</span><span class="n">width</span><span class="p">;</span> <span class="o">++</span><span class="n">column</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">])</span>
+				<span class="k">delete</span><span class="p">[]</span> <span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">];</span>
+		<span class="p">}</span>
+		<span class="k">delete</span><span class="p">[]</span> <span class="n">data</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span> <span class="n">state</span><span class="o">::</span><span class="k">operator</span> <span class="o">&lt;</span><span class="p">(</span><span class="k">const</span> <span class="n">state</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">g</span> <span class="o">!=</span> <span class="n">other</span><span class="p">.</span><span class="n">g</span><span class="p">)</span> <span class="k">return</span> <span class="n">g</span> <span class="o">&lt;</span> <span class="n">other</span><span class="p">.</span><span class="n">g</span><span class="p">;</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">column</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">column</span> <span class="o">&lt;</span> <span class="n">g</span><span class="o">-&gt;</span><span class="n">width</span><span class="p">;</span> <span class="o">++</span><span class="n">column</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">row</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="n">g</span><span class="o">-&gt;</span><span class="n">height</span><span class="p">;</span> <span class="o">++</span><span class="n">row</span><span class="p">)</span> <span class="p">{</span>
+			<span class="cm">/*if(data[column][row] != other.data[column][row]) {</span>
+<span class="cm">				return data[column][row] &lt; other.data[column][row];</span>
+<span class="cm">			}*/</span>
+			
+			<span class="k">if</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="n">and</span> <span class="n">other</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">continue</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="k">if</span><span class="p">((</span><span class="o">*</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">])</span> <span class="o">&lt;</span> <span class="p">(</span><span class="o">*</span><span class="n">other</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">]))</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+			<span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">((</span><span class="o">*</span><span class="n">other</span><span class="p">.</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">])</span> <span class="o">&lt;</span> <span class="p">(</span><span class="o">*</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">]))</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+			<span class="p">}</span>
+			
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span> <span class="n">state</span><span class="o">::</span><span class="k">operator</span> <span class="o">!=</span><span class="p">(</span><span class="k">const</span> <span class="n">state</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="o">*</span><span class="k">this</span> <span class="o">&lt;</span> <span class="n">other</span> <span class="n">or</span> <span class="n">other</span> <span class="o">&lt;</span> <span class="o">*</span><span class="k">this</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span> <span class="n">state</span><span class="o">::</span><span class="k">operator</span> <span class="o">==</span><span class="p">(</span><span class="k">const</span> <span class="n">state</span><span class="o">&amp;</span> <span class="n">other</span><span class="p">)</span> <span class="k">const</span> <span class="p">{</span>
+	<span class="k">return</span> <span class="o">!</span><span class="p">(</span><span class="o">*</span><span class="k">this</span> <span class="o">!=</span> <span class="n">other</span><span class="p">);</span>
+<span class="p">}</span>
+
+
+<span class="kt">bool</span> <span class="n">state</span><span class="o">::</span><span class="n">is_free</span><span class="p">(</span><span class="kt">int</span> <span class="n">C</span><span class="p">,</span> <span class="kt">int</span> <span class="n">R</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">column</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">column</span> <span class="o">&lt;=</span> <span class="n">C</span><span class="p">;</span> <span class="o">++</span><span class="n">column</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">row</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">row</span> <span class="o">&lt;=</span> <span class="n">R</span><span class="p">;</span> <span class="o">++</span><span class="n">row</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">]</span> <span class="o">&amp;&amp;</span>
+				<span class="n">column</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">width</span> <span class="o">&gt;</span> <span class="n">C</span> <span class="o">&amp;&amp;</span>
+				<span class="n">row</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">height</span> <span class="o">&gt;</span> <span class="n">R</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">return</span> <span class="kc">false</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">vector</span><span class="o">&lt;</span><span class="n">state</span><span class="o">*&gt;</span> <span class="n">state</span><span class="o">::</span><span class="n">moves</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">vector</span><span class="o">&lt;</span><span class="n">state</span><span class="o">*&gt;</span> <span class="n">ret</span><span class="p">;</span>
+
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">column</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">column</span> <span class="o">&lt;</span> <span class="n">g</span><span class="o">-&gt;</span><span class="n">width</span><span class="p">;</span> <span class="o">++</span><span class="n">column</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">row</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="n">g</span><span class="o">-&gt;</span><span class="n">height</span><span class="p">;</span> <span class="o">++</span><span class="n">row</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">])</span> <span class="p">{</span>
+				<span class="kt">int</span> <span class="n">left</span> <span class="o">=</span> <span class="n">column</span><span class="p">;</span>
+				<span class="kt">int</span> <span class="n">right</span> <span class="o">=</span> <span class="n">column</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+				<span class="kt">int</span> <span class="n">top</span> <span class="o">=</span> <span class="n">row</span><span class="p">;</span>
+				<span class="kt">int</span> <span class="n">bottom</span> <span class="o">=</span> <span class="n">row</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+
+				<span class="k">if</span><span class="p">(</span><span class="n">bottom</span> <span class="o">&lt;</span> <span class="n">g</span><span class="o">-&gt;</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// sprawdzić ruch w dół</span>
+					<span class="kt">bool</span> <span class="n">allowed</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+					<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">ic</span> <span class="o">=</span> <span class="n">left</span><span class="p">;</span> <span class="n">ic</span> <span class="o">&lt;=</span> <span class="n">right</span><span class="p">;</span> <span class="o">++</span><span class="n">ic</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">if</span><span class="p">(</span><span class="n">is_free</span><span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="n">bottom</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+							<span class="n">allowed</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+							<span class="k">break</span><span class="p">;</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+					<span class="k">if</span><span class="p">(</span><span class="n">allowed</span><span class="p">)</span> <span class="p">{</span>
+						<span class="n">state</span><span class="o">*</span> <span class="n">ns</span> <span class="o">=</span> <span class="k">new</span> <span class="n">state</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">);</span>
+						<span class="n">swap</span><span class="p">(</span><span class="n">ns</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">ns</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">]);</span>
+						<span class="n">ret</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">ns</span><span class="p">);</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+				<span class="k">if</span><span class="p">(</span><span class="n">top</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// sprawdzić ruch w górę</span>
+					<span class="kt">bool</span> <span class="n">allowed</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+					<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">ic</span> <span class="o">=</span> <span class="n">left</span><span class="p">;</span> <span class="n">ic</span> <span class="o">&lt;=</span> <span class="n">right</span><span class="p">;</span> <span class="o">++</span><span class="n">ic</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">if</span><span class="p">(</span><span class="n">is_free</span><span class="p">(</span><span class="n">ic</span><span class="p">,</span> <span class="n">top</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+							<span class="n">allowed</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+							<span class="k">break</span><span class="p">;</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+					<span class="k">if</span><span class="p">(</span><span class="n">allowed</span><span class="p">)</span> <span class="p">{</span>
+						<span class="n">state</span><span class="o">*</span> <span class="n">ns</span> <span class="o">=</span> <span class="k">new</span> <span class="n">state</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">);</span>
+						<span class="n">swap</span><span class="p">(</span><span class="n">ns</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="n">ns</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">]);</span>
+						<span class="n">ret</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">ns</span><span class="p">);</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+				<span class="k">if</span><span class="p">(</span><span class="n">left</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// sprawdzić ruch w lewo</span>
+					<span class="kt">bool</span> <span class="n">allowed</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+					<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">ir</span> <span class="o">=</span> <span class="n">top</span><span class="p">;</span> <span class="n">ir</span> <span class="o">&lt;=</span> <span class="n">bottom</span><span class="p">;</span> <span class="o">++</span><span class="n">ir</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">if</span><span class="p">(</span><span class="n">is_free</span><span class="p">(</span><span class="n">left</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ir</span><span class="p">)</span> <span class="o">==</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+							<span class="n">allowed</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+							<span class="k">break</span><span class="p">;</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+					<span class="k">if</span><span class="p">(</span><span class="n">allowed</span><span class="p">)</span> <span class="p">{</span>
+						<span class="n">state</span><span class="o">*</span> <span class="n">ns</span> <span class="o">=</span> <span class="k">new</span> <span class="n">state</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">);</span>
+						<span class="n">swap</span><span class="p">(</span><span class="n">ns</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">column</span> <span class="o">-</span> <span class="mi">1</span><span class="p">][</span><span class="n">row</span><span class="p">],</span> <span class="n">ns</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">]);</span>
+						<span class="n">ret</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">ns</span><span class="p">);</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+				<span class="k">if</span><span class="p">(</span><span class="n">right</span> <span class="o">&lt;</span> <span class="n">g</span><span class="o">-&gt;</span><span class="n">width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// sprawdzić ruch w prawo</span>
+					<span class="kt">bool</span> <span class="n">allowed</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+					<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">ir</span> <span class="o">=</span> <span class="n">top</span><span class="p">;</span> <span class="n">ir</span> <span class="o">&lt;=</span> <span class="n">bottom</span><span class="p">;</span> <span class="o">++</span><span class="n">ir</span><span class="p">)</span> <span class="p">{</span>
+						<span class="k">if</span><span class="p">(</span><span class="n">is_free</span><span class="p">(</span><span class="n">right</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ir</span><span class="p">)</span> <span class="o">==</span> <span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+							<span class="n">allowed</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+							<span class="k">break</span><span class="p">;</span>
+						<span class="p">}</span>
+					<span class="p">}</span>
+					<span class="k">if</span><span class="p">(</span><span class="n">allowed</span><span class="p">)</span> <span class="p">{</span>
+						<span class="n">state</span><span class="o">*</span> <span class="n">ns</span> <span class="o">=</span> <span class="k">new</span> <span class="n">state</span><span class="p">(</span><span class="o">*</span><span class="k">this</span><span class="p">);</span>
+						<span class="n">swap</span><span class="p">(</span><span class="n">ns</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">column</span> <span class="o">+</span> <span class="mi">1</span><span class="p">][</span><span class="n">row</span><span class="p">],</span> <span class="n">ns</span><span class="o">-&gt;</span><span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">]);</span>
+						<span class="n">ret</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">ns</span><span class="p">);</span>
+					<span class="p">}</span>
+				<span class="p">}</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/* canvas + console = convas */</span>
+<span class="k">struct</span> <span class="n">convas</span> <span class="p">{</span>
+	<span class="kt">char</span><span class="o">**</span> <span class="n">buff</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">;</span>
+
+	<span class="n">convas</span><span class="p">(</span><span class="kt">int</span> <span class="n">width</span><span class="p">,</span> <span class="kt">int</span> <span class="n">height</span><span class="p">)</span><span class="o">:</span> <span class="n">width</span><span class="p">(</span><span class="n">width</span><span class="p">),</span> <span class="n">height</span><span class="p">(</span><span class="n">height</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">buff</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">char</span><span class="o">*</span><span class="p">[</span><span class="n">height</span><span class="p">];</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">row</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="n">height</span><span class="p">;</span> <span class="o">++</span><span class="n">row</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">buff</span><span class="p">[</span><span class="n">row</span><span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="kt">char</span><span class="p">[</span><span class="n">width</span><span class="p">];</span>
+			<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">col</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">col</span> <span class="o">&lt;</span> <span class="n">width</span><span class="p">;</span> <span class="o">++</span><span class="n">col</span><span class="p">)</span> <span class="p">{</span>
+				<span class="n">buff</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">col</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39; &#39;</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="o">~</span><span class="n">convas</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">if</span><span class="p">(</span><span class="n">buff</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">height</span><span class="p">;</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> <span class="p">{</span>
+				<span class="k">delete</span><span class="p">[]</span> <span class="n">buff</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+			<span class="p">}</span>
+			<span class="k">delete</span><span class="p">[]</span> <span class="n">buff</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="kt">void</span> <span class="n">rect</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="kt">int</span> <span class="n">y</span><span class="p">,</span> <span class="kt">int</span> <span class="n">w</span><span class="p">,</span> <span class="kt">int</span> <span class="n">h</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="n">x</span><span class="o">+</span><span class="n">w</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">buff</span><span class="p">[</span><span class="n">y</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;-&#39;</span><span class="p">;</span>
+			<span class="n">buff</span><span class="p">[</span><span class="n">y</span><span class="o">+</span><span class="n">h</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;-&#39;</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="n">buff</span><span class="p">[</span><span class="n">y</span><span class="o">+</span><span class="n">h</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">x</span><span class="o">+</span><span class="n">w</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;/&#39;</span><span class="p">;</span>
+		<span class="n">buff</span><span class="p">[</span><span class="n">y</span><span class="p">][</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;/&#39;</span><span class="p">;</span>
+		<span class="n">buff</span><span class="p">[</span><span class="n">y</span><span class="p">][</span><span class="n">x</span><span class="o">+</span><span class="n">w</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\\&#39;</span><span class="p">;</span>
+		<span class="n">buff</span><span class="p">[</span><span class="n">y</span><span class="o">+</span><span class="n">h</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\\&#39;</span><span class="p">;</span>
+
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="n">y</span><span class="o">+</span><span class="n">h</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="o">++</span><span class="n">r</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">buff</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;|&#39;</span><span class="p">;</span>
+			<span class="n">buff</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="n">x</span><span class="o">+</span><span class="n">w</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;|&#39;</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">r</span> <span class="o">=</span> <span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="n">y</span><span class="o">+</span><span class="n">h</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="o">++</span><span class="n">r</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">c</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span> <span class="n">c</span> <span class="o">&lt;</span> <span class="n">x</span><span class="o">+</span><span class="n">w</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span> <span class="o">++</span><span class="n">c</span><span class="p">)</span> <span class="p">{</span>
+				<span class="n">buff</span><span class="p">[</span><span class="n">r</span><span class="p">][</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;#&#39;</span><span class="p">;</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="kt">void</span> <span class="n">print</span><span class="p">()</span> <span class="p">{</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">row</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="n">height</span><span class="p">;</span> <span class="o">++</span><span class="n">row</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">column</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">column</span> <span class="o">&lt;</span> <span class="n">width</span><span class="p">;</span> <span class="o">++</span><span class="n">column</span><span class="p">)</span> <span class="p">{</span>
+				<span class="n">putchar</span><span class="p">(</span><span class="n">buff</span><span class="p">[</span><span class="n">row</span><span class="p">][</span><span class="n">column</span><span class="p">]);</span>
+			<span class="p">}</span>
+			<span class="n">putchar</span><span class="p">(</span><span class="sc">&#39;\n&#39;</span><span class="p">);</span>
+		<span class="p">}</span>	
+	<span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kt">void</span> <span class="n">state</span><span class="o">::</span><span class="n">show</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kt">int</span> <span class="n">xscale</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span> <span class="n">yscale</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+	<span class="n">convas</span> <span class="n">c</span><span class="p">(</span><span class="n">g</span><span class="o">-&gt;</span><span class="n">width</span> <span class="o">*</span> <span class="n">xscale</span><span class="p">,</span> <span class="n">g</span><span class="o">-&gt;</span><span class="n">height</span> <span class="o">*</span> <span class="n">yscale</span><span class="p">);</span>
+
+	<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">column</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">column</span> <span class="o">&lt;</span> <span class="n">g</span><span class="o">-&gt;</span><span class="n">width</span><span class="p">;</span> <span class="o">++</span><span class="n">column</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">row</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">row</span> <span class="o">&lt;</span> <span class="n">g</span><span class="o">-&gt;</span><span class="n">height</span><span class="p">;</span> <span class="o">++</span><span class="n">row</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">block</span><span class="o">*</span> <span class="n">b</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">column</span><span class="p">][</span><span class="n">row</span><span class="p">];</span>
+			<span class="k">if</span><span class="p">(</span><span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+				<span class="n">c</span><span class="p">.</span><span class="n">rect</span><span class="p">(</span><span class="n">column</span> <span class="o">*</span> <span class="n">xscale</span><span class="p">,</span> <span class="n">row</span> <span class="o">*</span> <span class="n">yscale</span><span class="p">,</span> <span class="n">b</span><span class="o">-&gt;</span><span class="n">width</span> <span class="o">*</span> <span class="n">xscale</span><span class="p">,</span> <span class="n">b</span><span class="o">-&gt;</span><span class="n">height</span> <span class="o">*</span> <span class="n">yscale</span><span class="p">);</span>
+			<span class="p">}</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="n">c</span><span class="p">.</span><span class="n">print</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">game</span> <span class="n">b</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
+	<span class="n">b</span><span class="p">.</span><span class="n">place_obstacle</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+	<span class="n">b</span><span class="p">.</span><span class="n">place_obstacle</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+	<span class="n">b</span><span class="p">.</span><span class="n">place_obstacle</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+	<span class="n">b</span><span class="p">.</span><span class="n">place_obstacle</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+	<span class="n">b</span><span class="p">.</span><span class="n">place_obstacle</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+	<span class="n">b</span><span class="p">.</span><span class="n">place_obstacle</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+	<span class="n">b</span><span class="p">.</span><span class="n">place_obstacle</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+	<span class="n">b</span><span class="p">.</span><span class="n">place_obstacle</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+	<span class="n">b</span><span class="p">.</span><span class="n">place_obstacle</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+	<span class="n">b</span><span class="p">.</span><span class="n">place_obstacle</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
+	<span class="n">b</span><span class="p">.</span><span class="n">place_target</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+
+  	<span class="n">printf</span><span class="p">(</span><span class="s">&quot;Zaczynam przeszukiwanie...</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+
+  	<span class="n">b</span><span class="p">.</span><span class="n">solve</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>

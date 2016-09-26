@@ -1,0 +1,37 @@
+<p>Dessin (czytane jak "dezajn") to program na androida, który napisałem na konkurs Samsung AppCup, a później postanowiłem rozwijać dalej.</p>
+
+<p>Więcej możesz o nim poczytać na <a href="http://dessin.it/">dessin.it</a>. Regularne aktualizacje pojawiają się także na profilach społecznościowych - na <a href="https://plus.google.com/b/112343231896739382693/">Google+</a>, <a href="https://www.facebook.com/pages/Dessin/410850499024675">Facebooku</a> oraz na <a href="http://www.youtube.com/channel/UC7zZQN7CF-JdYJCe3wT6YcA">YouTube</a>.</p>
+
+<p>Tutaj natomiast mogę napisać co nieco o Dessinie od podszewki. Jak był tworzony? Jakie kierunki będą rozwijane? itd. Rzeczy, które zainteresują raczej znajomych i ciekawskich, niż ogólną publikę.</p>
+
+<h2>Środowisko wielodotykowe</h2>
+<p>Głównym motywem do stworzenia Dessina była ułomność urządzeń mobilnych, na których łatwo i wygodnie się czyta i ogląda, ale praca na takim urządzeniu to już prawdziwy problem. Na takich urządzeniach nie ma mowy o <a href="http://pl.wikipedia.org/wiki/Spo%C5%82eczno%C5%9B%C4%87_haker%C3%B3w">najzwyczajniejszym hakowaniu</a>. Gdy coś się psuje, jedynym ratunkiem są modlitwy do programistów.</p>
+
+<p>Nawet programiści są jednak bezsilni bez narzędzi takich jak środowiska programistyczne czy narzędzia do kompilowania, instalacji i debugowania - dostępne tylko na <em>prawdziwych</em> komputerach.</p>
+
+<p>A szkoda, bo czytając artykuły (popularno)naukowe z ostatnich dekad (zwłaszcza z "ZUI" w tytule), można by się spodziewać, że ekrany dotykowe oraz tzw. <em>bezpośrednia interakcja</em> miała stać się rewolucją w pracy z komputerem.</p>
+
+<p>W artykułach tych autorzy piszą, jak dobrze różnego rodzaju struktury połączone - diagramy, grafy, sieci - opisują rzeczywiste obiekty. Piszą też, że to przez toporność klawiatury oraz ograniczone możliwości manipulacji myszką tak ciężko korzysta się z tej reprezentacji.</p>
+
+<p>Co zatrzymało te nowe, futurystyczne środowiska? Czemu wciąż nie możemy zaglądać do pracujących programów i oglądać przesyłanych przez różne moduły komunikatów? Czemu budowanie aplikacji nie może polegać na połączeniu kilku klocków (jak w UML-u), a (z bardziej codziennych zajęć) znajomi jadący na imprezę nie mogą skoordynować się za pomocą mapy ze swoimi lokalizacjami (zrobionej na poczekaniu).</p>
+
+<p>Po części problemem są systemy operacyjne - izolują aplikacje oraz uniemożliwiają (w miarę swoich możliwości) użytkownikowi modyfikowanie systemu i programów. Idzie to nawet dalej. W <em>Wytycznych Androida</em> można przeczytać <cite>"Too many choices and decisions make people unhappy."</cite> Ceniony jest tzw. <em>clean design</em> - gdzie jasno pokazane jest co i jak ma działać. Najlepiej jeśli użytkownik nie ma nawet możliwości popełnienia błędu. Niestety, clean design nie zawsze idzie w parze z funkcjonalnością.</p>
+
+<p>Co więc zrobić inaczej, żeby na ekranie dotykowym dało się zrobić wszystko to samo (a nawet więcej) co w, powiedzmy Bash-u?</p>
+
+<p>Potrzebny jest sposób łączenia różnych programów (i danych) w układy - coś jak języki programowania, ale przystosowane do działania na ekranie dotykowym. Żaden problem - mamy grafy. Pozwalają grupować, porządkować oraz zasadniczo łączyć dowolne elementy (wierzchołki). To daje nam podstawową strukturę danych. </p>
+
+<p>Czym w takim razie mają być wierzchołki? Może programami. Wtedy przez krawędzie przesyłane byłyby dane i całość działałaby jak sieć strumieni. A może jednak to pliki będą wierzchołkami? Wtedy każdy program (krawędź) mogłaby pobierać dane z pliku wejściowego i zapisywać do wyjściowego (jak w UNIX-ie). Obie opcje wydają się kuszące. Może więc nie podejmować decyzji za użytkownika i niech korzysta z tych narzędzi, które działają dla niego lepiej?</p>
+
+<p>Co więcej, po napisaniu jakiegoś ciekawego programu (albo w jego trakcie) ciekawa wydaje się możliwość udostępnienia go innym - do równoczesnej edycji bądź jako szablon/gotowy skrypt. W dobrym środowisku tych możliwości nie może zabraknąć. Może znajdzie się nawet jakaś sprytna metoda wyszukawania gotowych fragmentów kodu (albo raczej rysunków), które realizowałyby konkretne zadanie...</p>
+
+<p>Takie środowisko samo w sobie powinno zawierać wszystko czego może potrzebować użytkownik - podstawowe typy danych i operacje powinno dać się komponować we <em>wszystko</em> co mogą klasyczne programy.</p>
+
+<p>Kiedy każde narzędzie, każde polecenie i każda zmienna stanowią wierzchołki grafu mamy szanse zaobserwować ciekawą właściwość - synergię. To ma miejsce, kiedy jedno narzędzie, stworzone do pracy z konkretnymi danymi okazuje się rozwiązywać podobny problem w zupełnie innej dziedzinie. Weźmy program, który sortuje filmy na podstawie pytania o lepszy/gorszy z dwóch wybranych. Możemy go z powodzeniem zastosować do zaplanowania meczy w turineju piłkarskim. Taki turniej wyłoni nie tylko 3 pierwsze miejsca, ale w pełni "posortuje" drużyny.</p>
+
+<p>Brzmi wspaniale. Tylko ile narzędzi będzie potrzebnych do obsługi czegoś takiego. Pamiętajmy też, że cokolwiek zrobimy ręcznie, musi być możliwe do zautomatyzowania. Potrzebujemy odpowiedniego interfejsu - takiego, który nie tylko byłby wygodniejszy od typowych toolbarów, ale również dałby się zautomatyzować. Czemu więc nie skorzystać by więc z grafu? Część wierzchołków i krawędzi mogłaby przecież reprezentować interfejs. W ten sposób użytkownik nie tylko będzie mógł go "oskryptować", ale nawet zupełnie wymienić.</p>
+
+<p>No i, oczywiście, nie będzie w nim toolbarów - skorzystamy za to z przyjemniejszych w dotyku tzw. pie menu.</p>
+
+<p>Tak wygląda motyw stojący za Dessinem. Spodziewam się, że faktyczna implementacja zostanie skończona gdzieś w 2014 roku. Barierę stanowi oczywiście platforma (Android), oraz kwestie biznesowe (reklama, obecność w mediach społecznościowych, finansowanie itd.).</p>
+

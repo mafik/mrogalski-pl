@@ -1,0 +1,139 @@
+<p>Brakowało mi pod Fedorą porządnego pobieracza napisów więc jednego skleciłem. Kod jest w środku.</p>
+
+<p>Składa się z nieco zmodyfikowanego rdzenia z napi.py oraz odpowiedniego pliku .desktop.</p><p>W rdzeniu - napi pobiera najpierw napisy polskie a jeśli wystąpią problemy, angielskie. Dodatkowo zmienia znaki końca linii na unixowe, a w przypadku polskich napisów konwertuje tekst z windowsowych ogonków na utf8.</p><p>Plik .desktop pozwala to odpalić z poziomu menu kontekstowego nautilusa czy dolphina.</p><p><strong>/usr/bin/subfetcher.py</strong>:</p>
+<pre class="brush: python">#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Based on http://napi.py.googlepages.com/napi.py
+import sys
+
+import os
+import hashlib
+import sys
+import urllib
+
+from optparse import OptionParser
+
+__version__ = '2.1'
+
+class Napi(object):
+    
+    def __init__(self, fname, force_replace=True):
+        self.fname = fname
+        self.force_replace = force_replace
+
+        if not os.path.exists(self.fname):
+            self.notify("Pliku nie odnaleziono... ")
+            sys.exit(1)
+        
+        o = open(fname)
+        self.d = hashlib.md5()
+        self.d.update(o.read(10485760))
+        self.d = self.d.hexdigest()
+        o.close()
+    
+    def search(self, lang):
+        params = urllib.urlencode({
+            'l' : lang,
+            'f' : self.d,
+            't' : self.f(),
+            'v' : 'other',
+            'kolejka' : 'false',
+            'nick' : '',
+            'pass' : '',
+            'napios' : os.name,
+        })
+        
+        n = os.path.splitext(self.fname)[0] + ".txt"
+        t = os.path.splitext(self.fname)[0] + '.7z'
+        self.notify('Pobieram... (%s)' % os.path.basename(t))
+        
+        if (self.force_replace == False) and os.path.exists(n):
+            self.notify("Napisy są już na miejscu!")
+            return n
+        open(t, "w").close()
+        urllib.urlretrieve("http://napiprojekt.pl/unit_napisy/dl.php?%s" % params, t)
+        self.notify('Rozpakowuję... (%s)' % os.path.basename(n))
+        cmd = "/usr/bin/7za x -y -so -piBlm8NTigvru0Jr0 \"%s\" 2&gt; /dev/null &gt; \"%s\"" % (t, n)
+        if os.system(cmd):
+            try:
+                os.remove(n)
+            except OSError:
+                pass
+            self.notify("Błąd podczas rozpakowywania: " + cmd)
+            return None
+
+        self.notify("Napisy gotowe!")
+        os.remove(t)
+        return n
+        
+    
+    def f(self):
+        idx = [ 0xe, 0x3, 0x6, 0x8, 0x2 ]
+        mul = [ 2, 2, 5, 4, 3 ]
+        add = [ 0, 0xd, 0x10, 0xb, 0x5 ]
+    
+        b = []
+        for i in xrange(len(idx)):
+            a = add[i]
+            m = mul[i]
+            i = idx[i]
+    
+            t = a + int(self.d[i], 16)
+            v = int(self.d[t:t+2], 16)
+            b.append( ("%x" % (v*m))[-1] )
+    
+        return ''.join(b)
+        
+    def notify(self, content):
+        print '[NAPI] %s' % (content)
+
+def postprocess(filename, windowsToUtfEncoding = False, unixLineEndings = True):
+    s = open(filename).read()
+    os.remove(filename)
+
+    if unixLineEndings:
+        s = s.replace('\r\n', '\n').replace('\r', '\n')
+
+    if windowsToUtfEncoding:
+        s = s.decode('cp1250').encode('utf8')
+
+    ready = open(filename, 'w')
+    ready.write(s)
+    ready.close()
+
+def main():
+
+    args = sys.argv[1:]
+
+    for arg in args:
+
+        napi = Napi(args[0])
+
+        if path = napi.search('PL'):
+            postprocess(path, True)
+            continue
+
+        
+        if path = napi.search('ENG'):
+            postprocess(path)
+            continue
+        
+        # fallback
+
+if __name__ == '__main__':
+    main()
+</pre>
+<p><strong>/usr/share/applications/Subfetcher.desktop</strong>:</p>
+<pre class="brush: plain">[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Subfetcher
+GenericName=Subtitle Downloader
+Terminal=true
+MimeType=video/dv;video/mpeg;video/x-mpeg;video/msvideo;video/quicktime;video/x-anim;video/x-avi;video/x-ms-asf;video/x-ms-wmv;video/x-msvideo;video/x-nsv;video/x-flc;video/x-fli;application/ogg;application/x-ogg;video/x-ogm+ogg;audio/x-vorbis+ogg;application/x-matroska;audio/x-matroska;video/x-matroska;video/webm;audio/webm;audio/x-mp3;audio/x-mpeg;audio/mpeg;audio/x-wav;audio/x-mpegurl;audio/x-scpls;audio/x-m4a;audio/x-ms-asf;audio/x-ms-asx;audio/x-ms-wax;application/vnd.rn-realmedia;audio/x-real-audio;audio/x-pn-realaudio;application/x-flac;audio/x-flac;application/x-shockwave-flash;misc/ultravox;audio/vnd.rn-realaudio;audio/x-pn-aiff;audio/x-pn-au;audio/x-pn-wav;audio/x-pn-windows-acm;image/vnd.rn-realpix;video/vnd.rn-realvideo;audio/x-pn-realaudio-plugin;application/x-extension-mp4;audio/mp4;video/mp4;video/mp4v-es;x-content/video-vcd;x-content/video-svcd;x-content/video-dvd;x-content/audio-cdda;x-content/audio-player;video/x-flv;application/xspf+xml;
+Exec=python /home/marek/Dokumenty/Subfetcher/main.py %U
+Icon=totem
+Name[pl_PL]=Subfetcher
+</pre>
+

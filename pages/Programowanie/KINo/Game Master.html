@@ -1,0 +1,41 @@
+<p>To silnik do prowadzenia gier online. Ogólnie rzecz biorąc to przepisane i poprawione mechanizmy, które wcześniej zadziałały w <em>Walkach Sądowych</em>. Kilka cech samego silnika, które mogą cię zainteresować to:</p>
+<p>Działa w jednym wątku - co ułatwia pisanie samej gry - nie trzeba stosować blokad ani kolejek komunikatów.</p>
+<p>Automatycznie zapisuje stan rozgrywki w chwili wyłączenia (przechwytuje SIGINT). Domyślnie ładuje też zapisaną w pliku listę graczy z ich hasłami.</p>
+<p>Dba o logowanie wszystkich istotnych informacji jednocześnie kolorując logi w obsługujących kolory terminalach.</p>
+<p>Posiada eleganckie API oparte na pomyśle Grześka z jego implementacji gry <a href="https://deadline24.pl/assets/Uploads/dl24.final.2010.pdf">Snejk</a>.</p>
+
+<h2>Pobieranie</h2>
+<p>Kod źródłówy można pobrać <a href="/download/game_master.tar.xz">tutaj</a>. Jeśli jesteś zainteresowany jego rozwojem, <em>koniecznie</em> daj mi znać, bo wtedy przeniosę go na jakiegoś GitHub-a i dopiszę dokumentację.</p>
+
+<h2>Przykład wykorzystania</h2>
+<div class="highlight"><pre><span class="kn">import</span> <span class="nn">game_master</span><span class="o">,</span> <span class="nn">time</span>
+
+<span class="n">log</span><span class="p">,</span> <span class="n">args</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">game_master</span><span class="o">.</span><span class="n">log</span><span class="p">,</span> <span class="n">game_master</span><span class="o">.</span><span class="n">Arguments</span><span class="p">,</span> <span class="n">game_master</span><span class="o">.</span><span class="n">data</span>
+
+<span class="k">class</span> <span class="nc">Player</span><span class="p">:</span>
+	<span class="nd">@args</span><span class="p">()</span>
+	<span class="k">def</span> <span class="nf">action_RAISE</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="s">&#39;RAISE&#39;</span>
+		<span class="k">return</span> <span class="s">&#39;OK&#39;</span>
+
+	<span class="nd">@args</span><span class="p">()</span>
+	<span class="k">def</span> <span class="nf">action_STOP</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+		<span class="bp">self</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="s">&#39;STOP&#39;</span>
+		<span class="k">return</span> <span class="s">&#39;OK&#39;</span>
+
+<span class="k">def</span> <span class="nf">tick</span><span class="p">():</span>
+	<span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;Turn &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">game_master</span><span class="o">.</span><span class="n">turn</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; ends&#39;</span>
+	<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">game_master</span><span class="o">.</span><span class="n">players</span><span class="p">:</span>
+		<span class="n">p</span><span class="o">.</span><span class="n">action</span> <span class="o">=</span> <span class="bp">None</span>
+	<span class="n">log</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+	<span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">game_master</span><span class="o">.</span><span class="n">online</span><span class="p">:</span>
+		<span class="n">p</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<span class="n">game_master</span><span class="o">.</span><span class="n">Player</span> <span class="o">=</span> <span class="n">Player</span>
+<span class="n">game_master</span><span class="o">.</span><span class="n">turn_time</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">game_master</span><span class="o">.</span><span class="n">turn_callback</span> <span class="o">=</span> <span class="n">tick</span>
+<span class="n">game_master</span><span class="o">.</span><span class="n">port</span> <span class="o">=</span> <span class="mi">8080</span>
+
+<span class="n">game_master</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</pre></div>
+

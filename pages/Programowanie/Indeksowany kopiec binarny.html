@@ -1,0 +1,93 @@
+<p>Wadą kopców w stl jest brak możliwości przeciążenia funkcji podmieniającej elementy. Skutecznie uniemożliwia to utrzymywanie indeksów wskazujących, na której pozycji kopca znajduje się szukany element (a jest to bardzo przydatna cecha). Poniżej znajduje się implementacja kopca pozwalająca na aktualizację i wyszukiwanie elementów.</p><h2>Wydajność</h2><p>W przypadku gdy priorytet dany jest funkcją użytkownika (większość praktycznych przypadków) wydajność dodawania i usuwania jest taka sama co std::priority_queue.</p><p>Chociaż <strong>kopiec zadziała prawidłowo przy powtarzających się wartościach</strong>, tablica indeksów będzie w stanie wskazać tylko jedną z pozycji kopca. Gdy jeden z elementów o wartości x zostanie usunięty, <em>tablica indeksów zaktualizuje się dopiero gdy pewien element o wartości x zostanie przesunięty</em>. Do tego czasu wskazywać będzie na pozycję za kopcem, na której został zapisany usunięty wcześniej element x. (W przypadku funkcji pop można ten stan skutecznie wykrywać i poprawiać gdyż wiemy na pewno, że kolejny element x z kopca będzie jego nowym korzeniem).</p>
+<p>Przykładowa implementacja posiada <strong>statycznie zdefiniowany rozmiar</strong>. Gdy znamy rozmiary rozwiązywanego problemu nieco przyśpiesza to czas działania. Do zastosowania w grach i programach użytkowych <em>warto dodać dynamiczną alokację pamięci</em>.</p>
+<p><strong>Czas aktualizacji</strong> jest asymptotycznie szybszy niż w przypadku kopców i kolejek priorytetowych stl (<strong>O(ln(n))</strong> vs O(n)).</p>
+<h2>Kod</h2>
+<pre class="brush:cpp">#include &lt;cstdio&gt;
+#include &lt;cstdlib&gt;
+
+// Priority queue with index
+template&lt;int N, bool (*cmp)(int a, int b)&gt;
+class heap {  
+  void h_swap(int ha, int hb) {
+    int tmp = h_n[ha];
+    h_n[ha] = h_n[hb];
+    h_n[hb] = tmp;
+    n_h[h_n[ha]] = ha;
+    n_h[h_n[hb]] = hb;
+  }
+
+  int parent(int i) {
+    return i?--i&gt;&gt;1:0;
+  }
+public:
+  int n_h[N]; // identifier to heap index (index array)
+  int h_n[N]; // heap index to identifier (actual heap)
+  int h_size;
+
+  void up(int index) {
+    int p = parent(index);
+    while(p != index &amp;&amp; !cmp(h_n[p], h_n[index])) {
+      h_swap(index, p);
+      index = p;
+      p = parent(index);
+    }
+  }
+
+  void down(int index) {
+    int child = (index&lt;&lt;1)+1; // first child heap index
+    while(child+1 &lt; h_size) {
+      if(cmp(h_n[index], h_n[child]) &amp;&amp; cmp(h_n[index], h_n[child+1])) return;
+      if(cmp(h_n[child], h_n[child+1])) {
+        h_swap(index, child);
+        index = child;
+      } else {
+        h_swap(index, child+1);
+        index = child+1;
+      }
+      child = (index&lt;&lt;1)+1;
+    } 
+    if(child &lt; h_size &amp;&amp; !cmp(h_n[index], h_n[child])) {
+      h_swap(index, child);
+    }
+  }
+
+  void push(int n) {
+    h_n[h_size] = n;
+    n_h[n] = h_size;
+    up(++h_size-1);
+  }
+
+  int pop() {
+    int tmp = h_n[0];
+    h_swap(0, --h_size);
+    down(0);
+    return tmp;
+  }
+
+  int update(int n) {
+    up(n_h[n]);
+    down(n_h[n]);
+  }
+};
+
+int p[1000000];
+bool compare(int a, int b) {
+  return p[a] &lt; p[b];
+}
+heap&lt;1000000, compare&gt; h;
+
+int main() {
+  for(int i = 0; i&lt;1000000; ++i) {
+    p[i] = 1000000-i;
+    h.push(i);
+  }
+  long long sum = 0;
+  for(int i = 0; i&lt;1000000; ++i) {
+    sum += h.pop();
+  }
+  printf("check: %lld, %lld\n", sum, 999999ll*1000000/2);
+
+  return 0;
+}
+</pre>
+

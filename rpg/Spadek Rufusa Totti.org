@@ -1,0 +1,384 @@
+#+TITLE:     Spadek Rufusa Totti
+#+AUTHOR:    Marek Rogalski 
+#+EMAIL:     mrogalski@poczta.pl
+#+DATE:      2008-12-06 sob
+#+DESCRIPTION: Scenariusz LARP-owy. Oryginalnie, sesja urodzinowa :)
+#+KEYWORDS:  WFRP, spadek, LARP, scenariusz
+#+LANGUAGE:  pl
+#+OPTIONS:   H:3 num:nil toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
+#+OPTIONS:   TeX:t LaTeX:nil skip:nil d:nil todo:t pri:nil tags:not-in-toc
+#+INFOJS_OPT: view:nil toc:nil ltoc:t mouse:underline buttons:0 path:http://orgmode.org/org-info.js
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+#+LINK_UP:   
+#+LINK_HOME: 
+#+LaTeX_CLASS: mrart
+
+* O przygodzie
+  Przygoda dla 5-8 graczy (mo¿esz usun±æ wybrane postaci tak ¿eby
+  dopasowaæ frakcje rywalizuj±ce w przygodzie do preferencji swoich
+  graczy). Ka¿dy gracz otrzymuje w³asn± kartê postaci okre¶laj±c± jej
+  historiê i ilo¶æ kostek jak± rzuca podczas testowania
+  umiejêtno¶ci. Tylko Mistrz Gry i gracz odgrywaj±cy Szalonego Karla
+  czytaj± wszystkie karty postaci.
+
+* Rufus Totti
+  Znany odkrywca. W m³odo¶ci p³ywa³ na statkach, gdzie pozna³ Albion,
+  Nordiê i Arabiê. Dziêki podró¿om zyska³ nieprzeciêtne
+  wykszta³cenie. Cz³onek wyprawy do Kitaju w latach
+  2401-2413. Powróci³ w nielicznej grupie ocala³ych ataku ¶nie¿ycy w
+  górach Krañca ¦wiata. Po swojej najwiêkszej podró¿y wiele opowiada³
+  o cudach które tam widzia³. Przypisuje sobie przywiezienie do
+  Starego ¦wiata, Okruchu Nieba, magicznego katalizatora. Opisa³
+  historiê Kitaju, kulturê jego mieszkañców oraz bitwy w których ponoæ
+  bra³ udzia³.
+
+  Po powrocie b³yskawicznie siê wzbogaci³, zyskuj±c miano podró¿nika i
+  odkrywcy. Osiedli³ siê w Ostermarku, przy granicy z
+  Kislevem. Pó¼niej wielokrotnie jeszcze wyp³ywa³ w podró¿e do
+  Albionu, gdzie jest jednym z g³ównych mecenasów Domu Sztuki. Po
+  katastrofie morskiej i cudownym ocaleniu zaniecha³ dalszych
+  podró¿y. Osiad³ na sta³e w posiad³o¶ci w Modvilli (kraina
+  geograficzna w Ostermarku), gdzie po dwóch latach, w wieku 44 lat,
+  zmar³.
+  
+  Za dwa dni odbyæ ma siê podzia³ spadku pomiêdzy spadkobierców,
+  oraz dodatkowa licytacja pomiêdzy spadkobiercami. 
+
+\newpage
+
+* Zagraj±:
+  - Szalony Karl :: ch³opak w wieku ok 25 lat. Jest niezbyt zadbany,
+                    posiada rozbiegane oczy i czarne, potargane
+                    w³osy. Ponoæ cierpi na amnezjê, czêsto zapomina co
+                    przed chwil± robi³. Niemal ca³y czas siê u¶miecha,
+                    czêsto szczerz±c nawet zêby. Rozmawiaj±c z kim¶
+                    wygl±da jakby z trudem powstrzymywa³ ¶miech. S³uga
+                    ¶.p.Rufusa.
+  - Pani Gosposia :: lekko pulchna, uprzejma kobieta w wieku 30-40
+                     lat. W³osy ma zwi±zane z ty³u g³owy w kok. Na
+                     jej ró¿owej twarzy czêsto go¶ci u¶miech. Z
+                     niespotykanym spokojem odnosi siê do Karla
+  - Bratanek :: (Adam Totti) bratanek ¶.p.Rusufa. W wieku ok 30 lat. Rudy,
+                  posiada krótki dobrze przystrzy¿ony zarost i
+                  nienaganne maniery. Rezydencja przypad³a mu do
+                  gustu, zamierza spêdziæ w niej kilka najbli¿szych
+                  miesiêcy. Pomimo tego, ¿e wiele czasu spêdza na
+                  rozmowach, zwykle ma³o mówi o sobie.
+  - Bratanica :: (Tija Totti) bratanica ¶.p.Rufusa, siostra Adama. Znacznie od
+                  niego m³odsza, ma ok 15 lat. Podobnie jak on, ma
+                  rude w³osy. Nosi je z ty³u g³owy, u góry owiniête i
+                  przeplecione czarn± wst±¿k±. Czêsto przesiaduje w
+                  pokojach, czyta wiele ksi±¿ek.
+  - Czarodziej :: (Igor Razin) czarodziej kolegów magii. Przyby³ by wzi±æ
+                    udzia³ w aukcji. Posiada ok 1,70m wzrostu,
+                    ca³kowicie z³ote w³osy przyciête na je¿yka, na
+                    nosie nosi, równie¿ z³ote, okr±g³e okulary. Jego
+                    wiek okre¶liæ mo¿na na ok 40 lat, chocia¿ z magami
+                    to nigdy nie wiadomo. Rozmowny, ale tylko je¶li
+                    temat rozmowy wyda mu siê interesuj±cy.
+  - Rycerz :: (Teodor Rittner) rycerz armii Ostermarku. Jeden z dawnych
+                     przyjació³ Rufusa. Ceni sobie szczero¶æ i
+                     odwagê. Jest do¶æ g³o¶ny. Ma ok. 40 lat, brodê
+                     zwi±zan± w trzy warkoczyki i parê
+                     przedstawiaj±cych s³oñce tatua¿y po
+                     bokach g³owy.
+  - Kaznodzieja Vlad :: (Vlad Schwarztur) Najbli¿szy przyjaciel
+       Teodora Rittnera. S± podobni jak dwie krople wody, jednak
+       Kaznodzieja jest dodatkowo fanatykiem Sigmara. Z powodu swojego
+       statusu, oraz przekonañ nie boi siê wtr±caæ w sprawy innych i
+       wymierzaæ sprawiedliwo¶æ wed³ug w³asnych opinii.
+  - Kap³anka :: (Rita Georgi) kap³anka Verbeny. Równie¿ przyjació³ka
+                Rufusa. Zna Rycerza Teodora, a Kaznodzieja wydaje siê
+                s³uchaæ jedynie jej. Kilka lat temu mi³o¶æ
+                Rufusa. Spokojna z charakteru. Ma ok 25-30 lat. W³osy
+                do ramion zwi±zane z ty³u ³owy w kucyka. Na co dzieñ
+                ubiera siê w szaty kap³añskie.
+
+
+\newpage
+
+* Akcja
+  - wieczór, mg³a, Morrslieb w pe³ni, wycie wilków, ogieñ trzaskaj±cy
+    w kominku. 
+    + go¶cie pojawiaj± siê jeden po drugim. Wszystkich wita Gosposia i
+      Karl, zapraszaj± na kolacjê wieczorem.
+    + na kolacji go¶cie opowiadaj± o sobie. S³ychaæ wycie wilków kto¶
+      widzi wilka za oknem.
+    + podmuch wiatru z kominka gasi p³omieñ, za oknem s³ychaæ ryk
+      potwora.
+    + drzwi zostaj± wy³amane, pojawia siê w nich para wilko³aków, walka
+    + na zewn±trz dooko³a domu znajduje siê osiem martwych wilków,
+      ca³e stado.
+  - niedziela, okazuje siê, ¿e cia³o Rufusa nie ma nogi
+  - wieczór
+    + robi siê podobnie jak wczoraj, spotkanie na kolacji
+    + zawia³ wiatr, zrobi³o siê cicho, walenie w drzwi, pojawia siê
+      nizio³ek, s³uga rodziny Tottich. Jest przera¿ony i zmêczony,
+      zaszyfrowan± wiadomo¶æ dla Kap³anki Rity, jednak odmawia jej
+      podania ze wzglêdu na stres, ucieka³ przed jakim¶ zwierzêciem w
+      lesie.
+  - poniedzia³ek, rano. Kilka rzeczy poprzesuwanych, Rufus móg³
+    straciæ kolejn± koñczynê
+  - zaczyna siê podzia³, pojawia siê Kap³an Verbeny, Maximus Ward,
+    przygotowuje podzia³. Karteczki z ofertami.
+  - podzia³ zakoñczony, przydzia³ skarbów, wieczór.
+  - Kap³an Verbeny zostaje na noc - ew. dowiaduje siê czego¶ o
+    Hobbicie i sprawia ma³e k³opoty Bratankowi Adamowi. Kto¶ go zabija.
+  - Gosposia zasypia. Kto¶ wchodzi do kuchni i widzi j± jak we krwi,
+    lunatykuj±c wyciera pod³ogê.
+
+
+\newpage
+
+* Pani Gosposia
+  Mieszka³a¶ z Rufusem ju¿ od ok 10 lat, od chwili kiedy siê tu
+  wprowadzi³. Przeprowadzi³a¶ siê ze swojej rodzinnej wioski, Modort.
+  Rufus by³ odmian± od wioskowego ¶wiata. Us³ysza³a¶ od niego wiele
+  historii o jego podró¿ach, s³ysza³a¶ o górach przewy¿szaj±cych Góry
+  Krañca ¦wiata o ludziach tam mieszkaj±cych. Mi³uj±cych pokój i
+  kontempluj±cych naturê mnichach, którzy mimo tego doskonale
+  opanowali sztuki walki. Widzia³a¶ równie¿ wiele pami±tek które przywióz³ z podró¿y. Maski
+  dzikich, futra egzotycznych zwierz±t, magiczne lampy i
+  kamienie. Spo¶ród tych wszystkich wspania³o¶ci, twoj± uwagê
+  najbardziej przyku³a kryszta³owa kula nazywana Okiem Chaosu. Jest to
+  przedmiot niezwykle niebezpieczny, ale mimo to Rufus zdecydowa³ siê
+  zachowaæ go przed okiem ³owców czarownic i kolegiów magii.
+  Co w Oku Chaosu tak przyci±gaj±cego? Nie wiesz. Byæ mo¿e to poczucie
+  ochrony które daje jego blisko¶æ, byæ mo¿e to spokojne g³osy
+  szepc±ce do twoich uszu tajemnice odleg³ych ¶wiatów tu¿ zanim
+  za¶niesz. Oko wyra¼nie wiele ci da³o. Nie by³oby to takie dziwne
+  gdyby nie jeden szczegó³. Mianowicie jadasz ludzi. O
+  tak... Wiesz jak smakuje ich miêso. Kilkakrotnie ju¿ uwiod³a¶
+  zbli¿aj±cych siê do granicy podró¿nych i poda³a¶ im truciznê by tego
+  samego wieczora podaæ ich na kolacjê. Ludzkie miêso jest przepyszne,
+  a ty uwielbiasz czyniæ z niego g³ówny sk³adnik podawanych przez
+  siebie potraw.
+  
+  Jest jeszcze Szalony Karl. Jest S³ug± tak jak Ty, ale jego
+  szaleñstwo objawia siê miêdzy innymi zupe³n± obojêtno¶ci± wobec
+  okrucieñstw, które widzi. Nie pisn±³ s³ówka o twojej tajemnicy
+  chocia¿ nie raz pomaga³ w kuchni.
+
+** Plan
+   Mieszkasz w kuchni, w której piwnicy, w beczce, trzymasz ko¶ci
+   swoich ofiar. Twoje pos³anie znajduje siê na w³azie. Twoje zadanie
+   to powitaæ go¶ci, i dobrze ich wykarmiæ nim odjad±, oraz na
+   wieczornych spotkaniach zachêcaæ
+   ka¿dego do opowiedzenia swojej historii. Zadbaj równie¿ o ty by
+   nikt nie dowiedzia³ siê o twoim sekrecie. Oko skrywa wiele tajemnic
+   ale musisz przej¶æ tê próbê by poznaæ ich wiêcej. Nie pozwól by
+   kto¶ zabra³ je z domu, oraz uwa¿aj, bo od jakiego¶ czasu zdarza ci
+   siê lunatykowaæ.
+
+** Cechy
+   | charakter | budowa | spryt | wykszta³cenie | zrêczno¶æ |
+   |-----------+--------+-------+---------------+-----------|
+   |         2 |      2 |     2 |             1 |         2 |
+
+\newpage
+
+* Szalony Karl
+  Do posiad³o¶ci przenios³e¶ siê jako nastolatek jeszcze, ok. 10 lat
+  temu. Pozna³e¶ tu Rufusa, Gosposie. Nie rzucaj±c siê w oczy,
+  przygl±da³e¶ siê ich ¿yciu, uczy³e¶ siê i ogl±da³e¶ skarby
+  przywiezione z podró¿y Rufusa. W³a¶nie w¶ród nich odnalaz³e¶
+  tzw. Oko Chaosu, kryszta³ow± kulê zawieraj±c± w ¶rodku zamkniêty
+  czarny p³yn. Chocia¿ byæ mo¿e to ono Ciebie odnalaz³o. Jest
+  wspania³e, nie dziwo wiêc, ¿e Rufus wola³ ukryæ je przed okiem
+  ³owców czarownic i kolegiów magii. Co jest w nim takiego
+  wspania³ego? Nie wiesz. Byæ mo¿e to poczucie
+  ochrony które daje jego blisko¶æ, byæ mo¿e to spokojne g³osy
+  szepc±ce do twoich uszu tajemnice odleg³ych ¶wiatów tu¿ zanim
+  za¶niesz. Oko wyra¼nie wiele ci da³o. Nie by³oby to takie dziwne
+  gdyby nie jeden szczegó³. Mianowicie potrafisz odczytywaæ
+  wspomnienia innych ludzi. Patrz±c im w oczy wiesz co robili dzi¶,
+  rok temu, kim byli w dzieciñstwie. Twoja zdolno¶æ jest jednak nieco
+  bardziej k³opotliwa. Mianowicie przypominaj±c komu¶ te wspomnienia,
+  sprawiasz, ¿e sam siê w nich pokazujesz. Nie jest to regu³a, ale
+  czêsty efekt uboczny. Do¶æ niebezpieczne, jednak
+  Oko nauczy³o ciê jak wykorzystaæ t± cechê by doprowadzaæ innych do
+  szaleñstwa.
+  Uwa¿aj równie¿ na swoj± amnezjê. Czêsto zdarza ci siê zapominaæ co
+  robi³e¶. Na chwilê tracisz kontakt z rzeczywisto¶ci± i widzisz
+  sytuacje które wydarz± siê w przysz³o¶ci.
+
+** Plan
+   Obserwuj ludzi którzy przychodz± do posiad³o¶ci. Przestrasz
+   ich. Nie dopu¶æ by kto¶ zabra³ od Ciebie Oko Chaosu.
+** Cechy
+   | charakter | budowa | spryt | wykszta³cenie | zrêczno¶æ |
+   |-----------+--------+-------+---------------+-----------|
+   |         3 |      3 |     2 |             1 |         3 | 
+\newpage
+* Bratanek
+  - nazywasz siê Adam Totti, jeste¶ bratankiem ¶.p. Rufusa i jako
+    jeden z jego najbli¿szych krewnych, zosta³e¶ wymieniony w jego
+    testamencie.
+  - Wraz z siostr± ukrywacie siê. Zostali¶cie niewinnie pos±dzeni o
+    zabójstwo waszej macochy sprawuj±cej pieczê nad waszym maj±tkiem w
+    ¶rodkowym Ostermarku. Zosta³a odnaleziona we w³asnym ³ó¿ku, ze
+    szpikulcem w sercu.
+  - W m³odo¶ci jako jego ulubione szkraby zabra³ was dwukrotnie na
+    wycieczkê do Albionu, gdzie odwiedzali¶cie najwiêksze miasta na
+    wyspie. Znale¼li¶cie siê równie¿ razem w Kolegiach jako widzowie
+    pokazów magii organizowanych przez Rubinowe Kolegium.
+** Plan
+   Zadbaj o to by¶cie z siostr± mogli siê gdzie¶ bezpiecznie
+   ukryæ. Jeste¶cie poszukiwani, ale wiadomo¶æ o tym nie dotar³a
+   jeszcze w te regiony. Postaraj siê równie¿ o to by jak najwiêcej
+   wyci±gn±æ dla was ze spadku po wuju. Spróbuj równie¿ dowiedzieæ siê
+   czy który¶ z go¶ci czego¶ o was nie s³ysza³. Spróbuj oczy¶ciæ was z
+   zarzutów o morderstwo.
+** Cechy
+   | charakter | budowa | spryt | wykszta³cenie | zrêczno¶æ |
+   |-----------+--------+-------+---------------+-----------|
+   |         3 | 2      |     3 |             3 |         3 |
+\newpage
+* Bratanica
+  - nazywasz siê Tija Totti, jeste¶ bratanic± ¶.p. Rufusa i jako jedna
+    z jego najbli¿szych krewniaczek zosta³a¶ wymieniona w jego
+    testamencie.
+  - wraz z bratem ukrywacie siê. Po tym jak zamordowa³a¶ wasz± macochê
+    sprawuj±c± pieczê nad waszym maj±tkiem w ¶rodkowym Ostermarku. Nie
+    zd±¿y³a¶ ukryæ cia³a. Odg³os zbli¿aj±cej sprz±taczki zmusi³ ciê do
+    ucieczki z sypialni waszej macochy, gdzie zasztyletowa³a¶ j±
+    wbijaj±c jej zabytkowy szpikulec w serce.
+  - Po morderstwie nikt ciê nie widzia³. G³ówny podejrzany to twój brat
+    który o niczym nie wie, lecz mimo tego zdecydowa³ siê uciec z
+    zamku zabieraj±c ciebie ze sob±. Obecnie próbuje znale¼æ dla was
+    jakie¶ bezpieczne miejsce do ukrycia siê i oczy¶ciæ was z
+    zarzutów. o morderstwo.
+** Plan
+   Zadbaj o to by twój brat niczego siê nie dowiedzia³. Jego obecne
+   starania s± ci wyj±tkowo na rêkê. Na rêkê równie¿ jest dla Ciebie
+   to jak traktuj± ciê inni go¶cie. Mianowicie zachowaj pozory
+   niegro¼nej, odciêtej od ¶wiata m³odej dziewczynki. Postaraj siê
+   równie¿ by nikt nie dowiedzia³ siê o waszej tajemnicy. W te regiony
+   nie dotar³a jeszcze wiadomo¶æ o tym ¿e jeste¶cie poszukiwani.
+** Cechy
+   | charakter | budowa | spryt | wykszta³cenie | zrêczno¶æ |
+   |-----------+--------+-------+---------------+-----------|
+   |         3 | 2      |     3 |             3 |         3 |
+\newpage
+* Czarodziej
+  - jeste¶ pochodz±cym z Kisleva, imperialnym szarym magiem. Twoja
+    specjalno¶æ to odwracanie uwagi, ukrywania
+    siebie i swoich zamiarów. Nie masz w³asnego imienia. W chwili
+    obecnej podajesz siê za maga
+    kolegium Z³ota. Nazywasz
+    siê Igor Razin. 
+  - uciek³e¶ z kolegiów. Twoja specjalizacja bardzo ci w tym
+    pomog³a. Nauczy³e¶ siê wprowadzaæ w trans w którym s³yszysz
+    duchy. Nie zadajesz im pytañ a jedynie s³yszysz ich wycia i
+    g³osy.
+  - jeste¶ ¶cigany imperialnym, a na mocy traktatu Gór Szarych,
+    obejmuj±cym tak¿e resztê Starego ¦wiata, listem goñczym za
+    zbieg³ymi magami chaosu.
+  - przyby³e¶ by znale¼æ i wykupiæ/wytargowaæ/ukra¶æ jak najwiêcej
+    rzadkich magicznych przedmiotów które pomog± ci w badaniach i
+    uczyni± ciê potê¿niejszym
+  - Posiadasz falsyfikat aktualnego pozwolenia na uprawianie magii,
+    zwój wisz±cy ci u pasa. Dodatkowo kolejny zwój zawiera informacje
+    o misji któr± rzekomo ci zlecono - wykupieniu i wytargowaniu magicznych
+    przedmiotów znajduj±cych siê z domu. Posiadasz na to przygotowane
+    100 z³otych koron jednak mo¿liwe ¿e spadkobiercy nie zdecyduj± siê
+    na sprzeda¿ swoich skarbów za pieni±dze. Pewnie bêdziesz musia³
+    wyhandlowaæ je w inny sposób.
+** Plan
+   Dowiedz siê jakie artefakty znajduj± siê w domu i spróbuj je
+   zdobyæ. Nie pozwól by odkryto twoj± prawdziw± to¿samo¶æ.
+** Cechy
+   | charakter | budowa | spryt | wykszta³cenie | zrêczno¶æ |
+   |-----------+--------+-------+---------------+-----------|
+   |         2 |      1 |     4 |             3 |         3 | 
+\newpage
+* Rycerz
+  - Nazywasz siê Teodor Rittner, jeste¶ rycerzem zakonu Czarnej
+    Pantery, broni±cego okolic Talabeklandu
+  - Zosta³e¶ wygnany z Talabeklandu. Pomog³e¶ w przemycaniu broni z
+    zakonnej zbrojowni. Wspomaga³e¶ buntowników d±¿±cych do zniesienia
+    stanu wojennego i przywrócenia do w³adzy w mie¶cie rady Talabeku.
+  - Rufus by³ twoim przyjacielem podczas wyprawy do Kitaju, ok 10 lat
+    temu. Widzia³e¶ tam wiele wspania³o¶ci jednak porównuj±c je do
+    opisów w jego ksi±¿kach i pamiêtnikach dochodzisz do wniosku, ¿e
+    mia³ on tendencje do koloryzowania historii.
+  - podczas podró¿y wielokrotnie ocali³e¶ jego ¿ycie.
+  - z tego co pamiêtasz Rufus posiada³ wiele niebezpiecznych
+    zainteresowañ, min. czarn± magi±. W jego posiad³o¶ci mo¿esz
+    spodziewaæ siê pozosta³o¶ci jego skarbów. B±d¼ ostro¿ny.
+  - Ze wzglêdu na jego sk³onno¶ci do kolorowania historii nie darzysz
+    go szczególnym szacunkiem, jednak przez najbli¿sze kilka dni
+    bêdziesz swe pogl±dy musia³ zachowaæ dla siebie. Mo¿liwe ¿e
+    otrzymasz jaki¶ spadek. 
+  - do posiad³o¶ci przyby³e¶ wraz z twoimi przyjació³mi którzy równie¿
+    brali udzia³ w wyprawie do Kitaju, Kaznodziej± Vladem i Kap³ank±
+    Rit±.
+** Plan
+   Nie³atwo jest rycerzowi bez maj±tku. Zdob±d¼ jak najwiêksze
+   fundusze. Przypodobaj siê temu kto dostanie
+   willê, a byæ mo¿e zyskasz na jaki¶ czas miejsce na sen.
+** Cechy
+   | charakter | budowa | spryt | wykszta³cenie | zrêczno¶æ |
+   |-----------+--------+-------+---------------+-----------|
+   |         3 |      4 |     1 |             2 |         2 | 
+\newpage
+* Kaznodzieja Vlad
+  - Nazywasz siê Vlad Schwarztur, jeste¶ zakonnikiem zakonu P³on±cej
+    Ró¿y, pochodz±cego z Altdorfu zakonu kap³anów bitewnych.
+  - kilkakrotnie w przesz³o¶ci zdarza³o ci siê prowadziæ ludno¶æ
+    przeciwko niebezpiecznym szaleñcom. Chocia¿ zakon tego nie
+    pochwala, to nic nie wysz³o na jaw, a Ty naprawdê pomog³e¶ oddaliæ
+    zagro¿enie Chaosu.
+  - Rufus by³ twoim przyjacielem podczas wyprawy do Kitaju, ok 10 lat
+    temu. Widzia³e¶ tam wiele wspania³o¶ci jednak porównuj±c je do
+    opisów w jego ksi±¿kach i pamiêtnikach dochodzisz do wniosku, ¿e
+    mia³ on tendencje do koloryzowania historii.
+  - z tego co pamiêtasz Rufus posiada³ wiele niebezpiecznych
+    zainteresowañ, min. czarn± magi±. W jego posiad³o¶ci mo¿esz
+    spodziewaæ siê pozosta³o¶ci jego skarbów. B±d¼ ostro¿ny.
+  - Ze wzglêdu na jego sk³onno¶ci do czarnej magii nie darzysz
+    go szczególnym szacunkiem, przez najbli¿sze kilka dni bêdziesz
+    mieæ okazjê do nastraszenia wszystkich jego znajomków historiami o
+    jego przygodach i ostatecznego oczernienia imienia tego szaleñca.
+  - do posiad³o¶ci przyby³e¶ wraz z twoimi przyjació³mi którzy równie¿
+    brali udzia³ w wyprawie do Kitaju, Rycerzem Teodorem Rittnerem i
+    Kap³ank± Rit±.
+  - Towarzystwo Rity i Teodora jest dla Ciebie dobr± przykrywk± dla
+    zbadania czym tak naprawdê zajmowa³ siê Rufus.
+
+** Plan
+   Dowiedz siê nieco wiêcej o tajemniczych zainteresowaniach Rufusa,
+   ostrze¿ jego przyjació³ i zneutralizuj wszelkie /skarby/ które
+   ewentualnie móg³ przywie¼æ z Kitaju.
+** Cechy
+   | charakter | budowa | spryt | wykszta³cenie | zrêczno¶æ |
+   |-----------+--------+-------+---------------+-----------|
+   |         4 |      3 |     2 |             2 |         1 | 
+\newpage
+* Kap³anka
+  - Nazywasz siê Rita Georgi, jeste¶ kap³ank± Verbeny, bogini nauki i
+    sprawiedliwo¶ci.
+  - Rufus by³ twoim przyjacielem podczas wyprawy do Kitaju, ok 10 lat
+    temu. Widzia³a¶ tam wiele wspania³o¶ci jednak porównuj±c je do
+    opisów w jego ksi±¿kach i pamiêtnikach dochodzisz do wniosku, ¿e
+    mia³ on tendencje do koloryzowania historii.
+  - do posiad³o¶ci przyby³a¶ wraz z twoimi przyjació³mi którzy równie¿
+    brali udzia³ w wyprawie do Kitaju, Rycerzem Teodorem Rittnerem i
+    Kaznodziej± Vladem.
+  - z tego co pamiêtasz Rufus posiada³ wiele niebezpiecznych
+    zainteresowañ, min. czarn± magi±. W jego posiad³o¶ci mo¿esz
+    spodziewaæ siê pozosta³o¶ci jego skarbów. B±d¼ ostro¿na.
+  - Podczas wyprawy mia³a¶ romans z Rufusem.
+  - Jako jedyna masz realny wp³yw na Kaznodziejê. Zdaje siê ¿e twój
+    widok przypomina mu jak±¶ historiê z przesz³o¶ci.
+
+** Plan
+   Nie pozwól, aby wybuchowa natura Kaznodziei zrujnowa³a wasze
+   roszczenia do czê¶ci spadku. Wyja¶nij wszystkie tajemnicze
+   wydarzenia, które mog± wydarzyæ siê podczas najbli¿szych dni.
+
+** Cechy
+   | charakter | budowa | spryt | wykszta³cenie | zrêczno¶æ |
+   |-----------+--------+-------+---------------+-----------|
+   |         2 |      1 |     3 |             4 |         2 |
